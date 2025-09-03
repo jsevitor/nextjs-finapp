@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AppUser {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  image      String
+  provider   String
+  providerId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  profiles   Profile[]
+  cards      Card[]
+  categories Category[]
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  name      String
+  appUserId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  appUser     AppUser @relation(fields: [appUserId], references: [id])
+}
+
+model Card {
+  id          String   @id @default(cuid())
+  name        String
+  closingDate Int
+  dueDay      Int
+  appUserId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+  appUser     AppUser @relation(fields: [appUserId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  appUserId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  appUser     AppUser @relation(fields: [appUserId], references: [id])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  cardId      String
+  profileId   String
+  categoryId  String
+  date        DateTime
+  business    String
+  description String
+  amount      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Parcelamento
+  installmentNumber Int?   // número da parcela (ex: 2)
+  installmentTotal  Int?   // total de parcelas (ex: 10)
+  parentId          String? // id da compra "principal", se quiser vincular
+
+  category Category @relation(fields: [categoryId], references: [id])
+  profile  Profile  @relation(fields: [profileId], references: [id])
+  card     Card     @relation(fields: [cardId], references: [id])
+
+  parent   Transaction? @relation("Installments", fields: [parentId], references: [id])
+  children Transaction[] @relation("Installments")
+}
