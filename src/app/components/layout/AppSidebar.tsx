@@ -31,7 +31,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Receitas", url: "/receitas", icon: TrendingUp },
   { title: "Despesas", url: "/despesas", icon: TrendingDown },
   { title: "Cartões", url: "/cartoes", icon: CreditCard },
@@ -46,10 +46,10 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup className="h-full">
-          <SidebarGroupLabel className="my-4 flex justify-center">
-            Application
+          <SidebarGroupLabel className="my-4 flex justify-center font-black">
+            FINAPP
           </SidebarGroupLabel>
-          <SidebarSeparator className="my-4" />
+          <SidebarSeparator className="my-2 2xl:my-4" />
           <SidebarGroupContent>
             <SidebarMenu className="text-lg">
               {items.map((item) => (
@@ -64,7 +64,7 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-          <SidebarSeparator className="my-4" />
+          <SidebarSeparator className="my-2 2xl:my-4" />
           <SidebarFooter>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
