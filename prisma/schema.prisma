@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -25,16 +24,17 @@ enum ExpenseType {
   CARD
 }
 
-model AppUser {
-  id         String   @id @default(cuid())
-  name       String
-  email      String   @unique
-  image      String?
-  provider   String
-  providerId String
-  role       Role     @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified DateTime? 
+  image         String?
+  provider      String?
+  providerId    String?
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   profiles        Profile[]
   cards           Card[]
@@ -48,12 +48,12 @@ model AppUser {
 model Profile {
   id        String   @id @default(cuid())
   name      String
-  appUserId String
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   transactions    Transaction[]
-  appUser         AppUser          @relation(fields: [appUserId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
   generalExpenses GeneralExpense[]
 }
 
@@ -62,23 +62,23 @@ model Card {
   name        String
   closingDate Int
   dueDay      Int
-  appUserId   String
+  userId      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   transactions Transaction[]
-  appUser      AppUser       @relation(fields: [appUserId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
 }
 
 model Category {
   id        String   @id @default(cuid())
   name      String
-  appUserId String
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   transactions    Transaction[]
-  appUser         AppUser          @relation(fields: [appUserId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
   generalExpenses GeneralExpense[]
 }
 
@@ -112,11 +112,11 @@ model HousingBill {
   name      String
   amount    Float
   dueDate   Int
-  appUserId String
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appUser AppUser @relation(fields: [appUserId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model GeneralExpense {
@@ -125,13 +125,13 @@ model GeneralExpense {
   amount      Float
   dueDate     Int
   categoryId  String?
-  appUserId   String
+  userId      String
   profileId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   category Category? @relation(fields: [categoryId], references: [id])
-  appUser  AppUser   @relation(fields: [appUserId], references: [id])
+  user  User   @relation(fields: [userId], references: [id])
   profile  Profile?  @relation(fields: [profileId], references: [id])
 }
 
@@ -149,7 +149,7 @@ model Account {
   id_token          String?
   session_state     String?
 
-  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -160,7 +160,7 @@ model Session {
   userId       String
   expires      DateTime
 
-  user AppUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
