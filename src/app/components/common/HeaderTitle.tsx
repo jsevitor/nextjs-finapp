@@ -1,4 +1,4 @@
-type HeaderTitleProps = {
+export type HeaderTitleProps = {
   title: string;
   children?: React.ReactNode;
 };
