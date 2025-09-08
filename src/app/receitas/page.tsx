@@ -1,6 +1,6 @@
 "use client";
 
-import { DialogAdd } from "../components/layout/DialogAdd";
+import { DialogAdd } from "../components/layout/Modal";
 import {
   Select,
   SelectContent,
