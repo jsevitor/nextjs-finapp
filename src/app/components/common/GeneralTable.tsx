@@ -1,4 +1,3 @@
-// components/common/DataTable.tsx - MELHORADO
 "use client";
 import {
   Table,
@@ -17,52 +16,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Loader2 } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Column } from "@/app/types/tableColumns";
 
-type DataTableProps<T> = {
+type GeneralTableProps<T> = {
   caption?: string;
   columns: Column<T>[];
   data: T[];
   showActions?: boolean;
-  isLoading?: boolean;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
 };
 
-export function DataTable<T extends { id: string; amount?: number }>({
+export function GeneralTable<T extends { id: string }>({
   caption,
   columns,
   data,
   showActions = true,
-  isLoading = false,
   onEdit,
   onDelete,
-}: DataTableProps<T>) {
-  const totalAmount = Array.isArray(data)
-    ? data.reduce((acc, item) => acc + (item.amount ?? 0), 0)
-    : 0;
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin mr-2" />
-        Carregando transações...
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return (
-      <div className="text-center p-8 text-muted-foreground">
-        <p className="text-lg">Nenhuma transação encontrada</p>
-        <p className="text-sm">
-          Tente ajustar os filtros ou adicionar uma nova transação
-        </p>
-      </div>
-    );
-  }
-
+}: GeneralTableProps<T>) {
   return (
     <Table>
       {caption && <TableCaption>{caption}</TableCaption>}
@@ -88,11 +61,11 @@ export function DataTable<T extends { id: string; amount?: number }>({
       </TableHeader>
 
       <TableBody>
-        {data.map((row, rowIndex) => (
-          <TableRow key={row.id ?? rowIndex} className="hover:bg-muted/50">
+        {data.map((row) => (
+          <TableRow key={row.id}>
             {columns.map((col) => (
               <TableCell
-                key={`cell-${row.id}-${String(col.key)}`}
+                key={`${row.id}-${String(col.key)}`}
                 className={`${
                   col.align === "right"
                     ? "text-right"
@@ -101,7 +74,7 @@ export function DataTable<T extends { id: string; amount?: number }>({
                     : ""
                 }`}
               >
-                {col.render ? col.render(row) : String(row[col.key] ?? "")}
+                {col.render ? col.render(row) : String(row[col.key])}
               </TableCell>
             ))}
 
@@ -134,22 +107,6 @@ export function DataTable<T extends { id: string; amount?: number }>({
           </TableRow>
         ))}
       </TableBody>
-
-      {data.length > 0 && (
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={columns.length - 1}></TableCell>
-            <TableCell className="font-bold text-right">
-              Total:{" "}
-              {totalAmount.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </TableCell>
-            {showActions && <TableCell></TableCell>}
-          </TableRow>
-        </TableFooter>
-      )}
     </Table>
   );
 }
