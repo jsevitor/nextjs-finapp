@@ -25,7 +25,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     parentId,
   } = body;
 
-  // Validação básica
   if (!date || !amount || !cardId || !profileId || !categoryId) {
     return NextResponse.json(
       {
@@ -41,15 +40,15 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       where: { id },
       data: {
         date: new Date(date),
-        business,
-        description,
-        amount,
+        business: business || null,
+        description: description || null,
+        amount: Number(amount),
         cardId,
         profileId,
         categoryId,
-        installmentNumber,
-        installmentTotal,
-        parentId,
+        installmentNumber: installmentNumber || null,
+        installmentTotal: installmentTotal || null,
+        parentId: parentId || null,
       },
     });
 
