@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     const category = await db.category.create({
-      data: { name, appUserId: user.id },
+      data: { name, userId: user.id },
     });
     return NextResponse.json(category, { status: 201 });
   } catch (error) {

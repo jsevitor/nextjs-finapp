@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     const profile = await db.profile.create({
-      data: { name, appUserId: user.id },
+      data: { name, userId: user.id },
     });
     return NextResponse.json(profile, { status: 201 });
   } catch (error) {

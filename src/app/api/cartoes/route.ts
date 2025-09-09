@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         name,
         closingDate,
         dueDay,
-        appUserId: user.id,
+        userId: user.id,
       },
     });
 

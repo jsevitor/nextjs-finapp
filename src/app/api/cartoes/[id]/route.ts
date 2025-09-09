@@ -28,3 +28,28 @@ export async function PUT(req: NextRequest, conext: RouteContext) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest, conext: RouteContext) {
+  if (!(await isAuthorized(req))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const params = await conext.params;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  try {
+    const card = await db.card.delete({
+      where: { id },
+    });
+    return NextResponse.json(
+      { message: "Cartão deletado com sucesso" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Erro ao deletar cartão:", error);
+    return NextResponse.json(
+      { error: "Erro ao deletar cartão" },
+      { status: 500 }
+    );
+  }
+}
