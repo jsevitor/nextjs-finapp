@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Busca o primeiro cartão e perfil do usuário
+    // Busca recursos obrigatórios
     const [defaultCard] = await db.card.findMany({
       where: { userId: user.id },
       take: 1,
@@ -36,26 +36,23 @@ export async function POST(req: NextRequest) {
       take: 1,
     });
 
-    if (!defaultCard || !defaultProfile) {
+    if (!defaultCard || !defaultProfile || !defaultCategory) {
       return NextResponse.json(
         {
-          error: "Usuário precisa ter ao menos 1 cartão e 1 perfil cadastrados",
+          error:
+            "Usuário precisa ter ao menos 1 cartão, 1 perfil e 1 categoria cadastrados",
         },
         { status: 400 }
       );
     }
 
-    // Busca todas as categorias do usuário
+    // Mapa de categorias do usuário
     const categorias = await db.category.findMany({
       where: { userId: user.id },
     });
-
     const mapaCategorias = new Map(
       categorias.map((cat) => [cat.name.toLowerCase(), cat.id])
     );
-
-    // Valida se alguma categoria é inválida
-    const nomesInvalidos: string[] = [];
 
     const transacoes = body.map((t: any, idx: number) => {
       let categoriaId: string | undefined;
@@ -67,14 +64,31 @@ export async function POST(req: NextRequest) {
         categoriaId = mapaCategorias.get(nomeNormalizado);
       }
 
-      // Se ainda não tiver uma categoria válida, usa a padrão
+      // Se não achar, usa categoria padrão
       if (!categoriaId) {
         categoriaId = defaultCategory.id;
       }
 
       const dataTransacao = new Date(t.date);
-      const monthReference = dataTransacao.getMonth() + 2;
-      const yearReference = dataTransacao.getFullYear();
+
+      let monthReference: number;
+      let yearReference: number;
+
+      if (t.monthReference && t.yearReference) {
+        // Usa o que veio no JSON
+        monthReference = t.monthReference;
+        yearReference = t.yearReference;
+      } else {
+        // Calcula com base na data (empurrando para fatura do mês seguinte)
+        const dataTransacao = new Date(t.date);
+        monthReference = dataTransacao.getMonth() + 2;
+        yearReference = dataTransacao.getFullYear();
+
+        if (monthReference > 12) {
+          monthReference = 1;
+          yearReference++;
+        }
+      }
 
       return {
         date: dataTransacao,
@@ -91,16 +105,6 @@ export async function POST(req: NextRequest) {
         yearReference,
       };
     });
-
-    if (nomesInvalidos.length > 0) {
-      return NextResponse.json(
-        {
-          error: "Categorias inválidas detectadas",
-          categoriasInvalidas: [...new Set(nomesInvalidos)],
-        },
-        { status: 400 }
-      );
-    }
 
     const created = await db.transaction.createMany({
       data: transacoes,
