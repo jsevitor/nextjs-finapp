@@ -19,7 +19,7 @@ import { formatCurrencyBRL, formatDateBR } from "@/utils/format";
 import { useTransactionFilters } from "@/hooks/useTransactionFilters";
 
 export default function TransactionsPage() {
-  const { filters, transactions, isLoading, error, setFilter, resetFilters } =
+  const { filters, transactions, isLoading, setFilter, setFilters } =
     useTransactionFilters();
 
   const { addTransaction, updateTransaction, removeTransaction } =
@@ -115,12 +115,12 @@ export default function TransactionsPage() {
         {/* Período */}
         <FilterPeriod
           value={{
-            month: filters.monthReference,
-            year: filters.yearReference,
+            monthReference: Number(filters.monthReference),
+            yearReference: Number(filters.yearReference),
           }}
-          onChange={(month, year) => {
-            setFilter("monthReference", month);
-            setFilter("yearReference", year);
+          onChange={(monthReference, yearReference) => {
+            setFilter("monthReference", monthReference);
+            setFilter("yearReference", yearReference);
           }}
         />
 

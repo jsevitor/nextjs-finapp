@@ -1,19 +1,21 @@
-// components/filters/FilterPeriod.tsx - CORRIGIDO
+// components/filters/FilterPeriod.tsx - BASEADO EM monthReference / yearReference
 import { Input } from "@/components/ui/input";
 
 type FilterPeriodProps = {
-  value: { month: number; year: number };
+  value: { monthReference: number; yearReference: number };
   onChange: (month: number, year: number) => void;
 };
 
 export default function FilterPeriod({ value, onChange }: FilterPeriodProps) {
-  const inputValue = `${value.year}-${String(value.month).padStart(2, "0")}`;
+  const inputValue = `${value.yearReference}-${String(
+    value.monthReference
+  ).padStart(2, "0")}`;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = e.target.value; // "YYYY-MM"
-    if (!dateValue) return;
+    const period = e.target.value; // "YYYY-MM"
+    if (!period) return;
 
-    const [yearStr, monthStr] = dateValue.split("-");
+    const [yearStr, monthStr] = period.split("-");
     const year = parseInt(yearStr, 10);
     const month = parseInt(monthStr, 10);
 
@@ -24,7 +26,7 @@ export default function FilterPeriod({ value, onChange }: FilterPeriodProps) {
 
   return (
     <div className="flex flex-col flex-1">
-      <label className="text-sm font-medium mb-1">Período</label>
+      <label className="text-sm font-medium mb-1">Período (Fatura)</label>
       <Input
         type="month"
         value={inputValue}
