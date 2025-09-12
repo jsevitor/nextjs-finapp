@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Filtros opcionais
-    const cardId = searchParams.get("card"); // agora opcional
+    const cardId = searchParams.get("card");
     const categoryId = searchParams.get("category");
     const minValue = searchParams.get("minValue");
     const maxValue = searchParams.get("maxValue");
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       monthReference,
       yearReference,
       card: {
-        userId: user.id, // garante que só veja as transações do próprio usuário
+        userId: user.id,
       },
     };
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       if (maxValue) where.amount.lte = parseFloat(maxValue);
     }
 
-    console.log("🔍 Buscando transações com filtros:", where);
+    // console.log("🔍 Buscando transações com filtros:", where);
 
     // Buscar transações
     const transactions = await db.transaction.findMany({
