@@ -32,7 +32,6 @@ export default function TransactionsModal({
   const { importTransactions, fetchTransactions } = useTransactionsStore();
   const [jsonInput, setJsonInput] = useState("");
   const [isImporting, setIsImporting] = useState(false);
-  const [importError, setImportError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProfiles();
