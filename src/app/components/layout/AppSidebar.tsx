@@ -11,6 +11,7 @@ import {
   CreditCard,
   PieChart,
   LogOut,
+  House,
 } from "lucide-react";
 
 import {
@@ -41,6 +42,7 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Receitas", url: "/receitas", icon: TrendingUp },
   { title: "Transações", url: "/transacoes", icon: TrendingDown },
+  { title: "Despesas Moradia", url: "/despesas-moradia", icon: House },
   { title: "Despesas Gerais", url: "/despesas-gerais", icon: PieChart },
   { title: "Cartões", url: "/cartoes", icon: CreditCard },
   { title: "Calendário", url: "/calendario", icon: Calendar },
