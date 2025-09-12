@@ -1,79 +1,144 @@
-import { DialogAdd } from "../components/layout/Modal";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import { useState } from "react";
+import { Wallet } from "lucide-react";
+import { DataTable } from "../components/common/DataTable";
+import { Column } from "../types/tableColumns";
 import Header from "../components/common/Header";
 import HeaderTitle from "../components/common/HeaderTitle";
 import { FiltersContainer } from "../components/filters/FiltersContainer";
-import { Home, PieChart } from "lucide-react";
+import FilterPeriod from "../components/filters/FilterPeriod";
+import FilterCategory from "../components/filters/FilterCategory";
 import PageContainer from "../components/layout/PageContainer";
+import { ButtonVariant } from "../components/common/ButtonVariant";
+import {
+  GeneralExpense,
+  useGeneralExpensesStore,
+} from "@/stores/generalExpesnsesStore";
+import GeneralExpensesModal from "../components/ui/general-expenses/GeneralExpensesModal";
+import { formatCurrencyBRL, formatDateBR } from "@/utils/format";
+import { useGeneralExpensesFilters } from "@/hooks/useGeneralExpensesFilters";
 
-export default function GenralExpensesPage() {
+export default function GeneralExpensesPage() {
+  // Hook novo com filtros + dados filtrados
+  const { filters, generalExpenses, isLoading, setFilter } =
+    useGeneralExpensesFilters();
+
+  // Store só para ações de CRUD
+  const { addGeneralExpense, updateGeneralExpense, removeGeneralExpense } =
+    useGeneralExpensesStore();
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isBeingEdited, setIsBeingEdited] = useState<GeneralExpense | null>(
+    null
+  );
+
+  const columns: Column<GeneralExpense>[] = [
+    {
+      key: "dueDate",
+      label: "Vencimento",
+      render: (row) => formatDateBR(row.dueDate),
+    },
+    { key: "description", label: "Descrição" },
+    {
+      key: "categoryId",
+      label: "Categoria",
+      render: (row) => row.categoryName ?? "—",
+    },
+    {
+      key: "amount",
+      label: "Valor",
+      align: "right",
+      render: (row) => formatCurrencyBRL(row.amount),
+    },
+  ];
+
+  const handleOpenAddModal = () => {
+    setIsBeingEdited({
+      id: "",
+      description: "",
+      amount: 0,
+      dueDate: new Date().toISOString().split("T")[0],
+      categoryId: "",
+      profileId: "",
+      userId: "",
+    });
+    setModalIsOpen(true);
+  };
+
+  const handleSubmit = async (expense: GeneralExpense) => {
+    try {
+      if (!expense.id) {
+        await addGeneralExpense(expense);
+      } else {
+        await updateGeneralExpense(expense);
+      }
+      setModalIsOpen(false);
+      setIsBeingEdited(null);
+    } catch (err) {
+      console.error("Erro ao salvar despesa geral:", err);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await removeGeneralExpense(id);
+    } catch (err) {
+      console.error("Erro ao deletar despesa geral:", err);
+    }
+  };
+
   return (
     <PageContainer>
       <Header>
         <HeaderTitle title="Despesas Gerais">
-          <PieChart className="h-8 w-8" />
+          <Wallet className="h-8 w-8" />
         </HeaderTitle>
-        <DialogAdd title="Adicionar Despesa Geral">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="date-1">Data</Label>
-              <Input id="date-1" name="date" type="date" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="author-1">Autor</Label>
-              <Input id="author-1" name="author" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="establishment-1">Estabelecimento</Label>
-              <Input id="establishment-1" name="establishment" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="description-1">Descrição</Label>
-              <Input id="description-1" name="description" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="installment-1">Parcelas</Label>
-              <Input id="installment-1" name="installment" type="number" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="installment-2">Parcela Atual</Label>
-              <Input id="installment-2" name="installment" type="number" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="category-1">Categoria</Label>
-              <Select>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="alimentacao">Alimentação</SelectItem>
-                  <SelectItem value="transporte">Transporte</SelectItem>
-                  <SelectItem value="lazer">Lazer</SelectItem>
-                  <SelectItem value="saude">Saúde</SelectItem>
-                  <SelectItem value="outros">Outros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="amount-1">Valor</Label>
-              <Input id="amount-1" name="amount" placeholder="R$ 0" />
-            </div>
-          </div>
-        </DialogAdd>
-      </Header>
-      <FiltersContainer></FiltersContainer>
 
-      <HeaderTitle title="Moradia">
-        <Home className="h-8 w-8" />
-      </HeaderTitle>
+        <ButtonVariant typeAction="add" action={handleOpenAddModal} />
+
+        <GeneralExpensesModal
+          isOpen={modalIsOpen}
+          expense={isBeingEdited}
+          onChange={setIsBeingEdited}
+          onClose={() => setModalIsOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      </Header>
+
+      <FiltersContainer>
+        {/* Período */}
+        <FilterPeriod
+          value={{
+            monthReference: Number(filters.monthReference),
+            yearReference: Number(filters.yearReference),
+          }}
+          onChange={(month, year) => {
+            setFilter("monthReference", month);
+            setFilter("yearReference", year);
+          }}
+        />
+
+        {/* Categoria */}
+        <FilterCategory
+          value={filters.category}
+          onChange={(categoryId) => setFilter("category", categoryId)}
+        />
+      </FiltersContainer>
+
+      <div className="border rounded-2xl overflow-hidden">
+        <DataTable
+          caption="Lista de despesas gerais"
+          columns={columns}
+          data={generalExpenses}
+          isLoading={isLoading}
+          onEdit={(row) => {
+            setIsBeingEdited(row);
+            setModalIsOpen(true);
+          }}
+          onDelete={(row) => handleDelete(row.id)}
+        />
+      </div>
     </PageContainer>
   );
 }

@@ -59,7 +59,7 @@ export default function TransactionsPage() {
       business: "",
       description: "",
       amount: 0,
-      cardId: filters.card, // já vem do filtro
+      cardId: filters.card || "",
       profileId: "",
       categoryId: "",
       installmentNumber: 1,
@@ -132,7 +132,7 @@ export default function TransactionsPage() {
 
         {/* Cartão */}
         <FilterCard
-          value={filters.card}
+          value={filters.card || ""}
           onChange={(cardId) => setFilter("card", cardId)}
         />
       </FiltersContainer>
