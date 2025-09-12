@@ -1,4 +1,4 @@
-// stores/filtersStore.ts - REFORMULADO
+// stores/filtersStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -6,11 +6,12 @@ export type Filters = {
   monthReference: number;
   yearReference: number;
   category: string;
-  card: string;
+  profile: string; // 🔥 adiciona filtro por perfil (comum a transações e despesas gerais)
+  card?: string; // 🔥 opcional, usado só em transações
   minValue: string;
   maxValue: string;
-  searchField: string;
-  searchTerm: string;
+  searchField?: string; // 🔥 opcional, usado mais em transações
+  searchTerm?: string;
 };
 
 type FiltersStore = {
@@ -27,7 +28,8 @@ const getDefaultFilters = (): Filters => {
     monthReference: today.getMonth() + 1,
     yearReference: today.getFullYear(),
     category: "",
-    card: "cmf8p8s45000rgisgz387jrxq", // Cartão principal
+    profile: "",
+    card: "cmf8p8s45000rgisgz387jrxq", // só relevante em transações
     minValue: "",
     maxValue: "",
     searchField: "",
@@ -55,7 +57,7 @@ export const useFiltersStore = create<FiltersStore>()(
       getDefaultFilters,
     }),
     {
-      name: "transaction-filters",
+      name: "app-filters",
       partialize: (state) => ({ filters: state.filters }),
     }
   )
