@@ -124,6 +124,8 @@ export async function POST(req: NextRequest) {
       installmentNumber = 1,
       installmentTotal = 1,
       parentId,
+      monthReference: bodyMonth,
+      yearReference: bodyYear,
     } = body;
 
     // Validação
@@ -147,8 +149,15 @@ export async function POST(req: NextRequest) {
     }
 
     const parsedDate = new Date(date);
-    const monthReference = parsedDate.getMonth() + 2;
-    const yearReference = parsedDate.getFullYear();
+
+    // 🔥 Prioriza valores do body (usados no cadastro manual)
+    let monthReference = bodyMonth ?? parsedDate.getMonth() + 2;
+    let yearReference = bodyYear ?? parsedDate.getFullYear();
+
+    if (monthReference > 12) {
+      monthReference = 1;
+      yearReference++;
+    }
 
     const transaction = await db.transaction.create({
       data: {
@@ -159,22 +168,16 @@ export async function POST(req: NextRequest) {
         cardId,
         profileId,
         categoryId,
-        installmentNumber: installmentNumber || 1,
-        installmentTotal: installmentTotal || 1,
+        installmentNumber,
+        installmentTotal,
         parentId: parentId || null,
         monthReference,
         yearReference,
       },
       include: {
-        category: {
-          select: { id: true, name: true },
-        },
-        profile: {
-          select: { id: true, name: true },
-        },
-        card: {
-          select: { id: true, name: true },
-        },
+        category: { select: { id: true, name: true } },
+        profile: { select: { id: true, name: true } },
+        card: { select: { id: true, name: true } },
       },
     });
 

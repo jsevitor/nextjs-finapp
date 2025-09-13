@@ -1,3 +1,4 @@
+// src/app/api/transacoes/[id]/route.ts
 import { db } from "@/lib/prisma";
 import { isAuthorized } from "@/lib/authorized";
 import { NextRequest, NextResponse } from "next/server";
