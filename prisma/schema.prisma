@@ -48,8 +48,9 @@ model Profile {
   updatedAt DateTime @updatedAt
 
   transactions    Transaction[]
-  user            User          @relation(fields: [userId], references: [id])
   generalExpenses GeneralExpense[]
+  housingBills    HousingBill[]
+  user            User          @relation(fields: [userId], references: [id])
 }
 
 model Card {
@@ -73,8 +74,9 @@ model Category {
   updatedAt DateTime @updatedAt
 
   transactions    Transaction[]
-  user         User          @relation(fields: [userId], references: [id])
   generalExpenses GeneralExpense[]
+  housingBills    HousingBill[]
+  user            User          @relation(fields: [userId], references: [id])
 }
 
 model Transaction {
@@ -105,31 +107,39 @@ model Transaction {
 }
 
 model HousingBill {
-  id        String   @id @default(cuid())
-  name      String
-  amount    Float
-  dueDate   Int
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  amount     Float
+  dueDate    DateTime
+  monthReference Int @default(1)
+  yearReference  Int @default(2025)
+  userId     String
+  profileId  String?
+  categoryId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  profile  Profile?  @relation(fields: [profileId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
 }
 
 model GeneralExpense {
   id          String   @id @default(cuid())
   description String?
   amount      Float
-  dueDate     Int
+  dueDate     DateTime
+  monthReference Int @default(1)
+  yearReference  Int @default(2025)
   categoryId  String?
   userId      String
   profileId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  category Category? @relation(fields: [categoryId], references: [id])
-  user  User   @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
   profile  Profile?  @relation(fields: [profileId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Account {
