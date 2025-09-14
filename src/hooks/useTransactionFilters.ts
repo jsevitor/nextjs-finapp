@@ -37,30 +37,24 @@ export const useTransactionFilters = () => {
 
   // Filtro local para busca por texto (mais eficiente que backend)
   const filteredTransactions = useMemo(() => {
-    if (!filters.searchTerm || !filters.searchField) {
+    if (!filters.searchTerm) {
       return transactions;
     }
 
     const searchTerm = filters.searchTerm.toLowerCase();
 
     const filtered = transactions.filter((transaction) => {
-      switch (filters.searchField) {
-        case "business":
-          return transaction.business?.toLowerCase().includes(searchTerm);
-        case "description":
-          return transaction.description?.toLowerCase().includes(searchTerm);
-        case "category":
-          return transaction.categoryName?.toLowerCase().includes(searchTerm);
-        default:
-          return true;
-      }
+      return (
+        transaction.business?.toLowerCase().includes(searchTerm) ||
+        transaction.description?.toLowerCase().includes(searchTerm) ||
+        transaction.categoryName?.toLowerCase().includes(searchTerm) ||
+        transaction.profileName?.toLowerCase().includes(searchTerm) ||
+        transaction.cardName?.toLowerCase().includes(searchTerm)
+      );
     });
 
-    console.log(
-      `🔍 Filtro de busca: ${filtered.length}/${transactions.length} transações`
-    );
     return filtered;
-  }, [transactions, filters.searchTerm, filters.searchField]);
+  }, [transactions, filters.searchTerm]);
 
   const applyFilters = useCallback(() => {
     if (filters.monthReference && filters.yearReference) {
