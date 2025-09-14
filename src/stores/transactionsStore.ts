@@ -31,6 +31,7 @@ type TransactionsStore = {
   addTransaction: (transaction: Omit<Transaction, "id">) => Promise<void>;
   updateTransaction: (transaction: Transaction) => Promise<void>;
   removeTransaction: (id: string) => Promise<void>;
+  removeTransactionsBulk: (ids: string[]) => Promise<void>;
   importTransactions: (
     transactions: Omit<Transaction, "id">[]
   ) => Promise<void>;
@@ -222,6 +223,38 @@ export const useTransactionsStore = create<TransactionsStore>((set, get) => ({
         isLoading: false,
         error:
           error instanceof Error ? error.message : "Erro ao remover transação",
+      });
+      throw error;
+    }
+  },
+
+  removeTransactionsBulk: async (ids: string[]) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch("/api/transacoes/bulk", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao remover transações");
+      }
+
+      set((state) => ({
+        transactions: state.transactions.filter((t) => !ids.includes(t.id)),
+        isLoading: false,
+      }));
+
+      console.log("✅ Transações removidas:", ids);
+    } catch (error) {
+      console.error("❌ Erro ao remover transações:", error);
+      set({
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : "Erro ao remover transações",
       });
       throw error;
     }
