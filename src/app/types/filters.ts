@@ -1,4 +1,4 @@
 export type FiltersProps = {
   filters: any;
-  setFilters: any;
+  setFilter: any;
 };
