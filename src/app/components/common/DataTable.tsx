@@ -26,6 +26,9 @@ type DataTableProps<T> = {
   data: T[];
   showActions?: boolean;
   isLoading?: boolean;
+  bulkMode?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
 };
@@ -36,6 +39,9 @@ export function DataTable<T extends { id: string; amount?: number }>({
   data,
   showActions = true,
   isLoading = false,
+  bulkMode = false,
+  selectedIds = [],
+  onSelectionChange,
   onEdit,
   onDelete,
 }: DataTableProps<T>) {
@@ -63,12 +69,36 @@ export function DataTable<T extends { id: string; amount?: number }>({
     );
   }
 
+  const allSelected = data.length > 0 && selectedIds.length === data.length;
+
+  const toggleAll = () => {
+    if (allSelected) onSelectionChange?.([]);
+    else onSelectionChange?.(data.map((d) => d.id));
+  };
+
+  const toggleOne = (id: string) => {
+    if (selectedIds.includes(id)) {
+      onSelectionChange?.(selectedIds.filter((i) => i !== id));
+    } else {
+      onSelectionChange?.([...selectedIds, id]);
+    }
+  };
+
   return (
     <Table>
       {caption && <TableCaption>{caption}</TableCaption>}
 
       <TableHeader className="bg-muted">
         <TableRow>
+          {bulkMode && (
+            <TableHead className="w-12 text-center">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleAll}
+              />
+            </TableHead>
+          )}
           {columns.map((col) => (
             <TableHead
               key={col.key as string}
@@ -83,13 +113,24 @@ export function DataTable<T extends { id: string; amount?: number }>({
               {col.label}
             </TableHead>
           ))}
-          {showActions && <TableHead className="text-right">Ações</TableHead>}
+          {showActions && (
+            <TableHead className="text-right font-bold">Ações</TableHead>
+          )}
         </TableRow>
       </TableHeader>
 
       <TableBody>
         {data.map((row, rowIndex) => (
           <TableRow key={row.id ?? rowIndex} className="hover:bg-muted/50">
+            {bulkMode && (
+              <TableCell className="text-center py-2">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(row.id)}
+                  onChange={() => toggleOne(row.id)}
+                />
+              </TableCell>
+            )}
             {columns.map((col) => (
               <TableCell
                 key={`cell-${row.id}-${String(col.key)}`}
@@ -107,28 +148,34 @@ export function DataTable<T extends { id: string; amount?: number }>({
 
             {showActions && (
               <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {onEdit && (
-                      <DropdownMenuItem onClick={() => onEdit(row)}>
-                        Editar
-                      </DropdownMenuItem>
-                    )}
-                    {onDelete && (
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => onDelete(row)}
-                      >
-                        Deletar
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {bulkMode ? (
+                  <Button variant="ghost" size="icon" disabled>
+                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {onEdit && (
+                        <DropdownMenuItem onClick={() => onEdit(row)}>
+                          Editar
+                        </DropdownMenuItem>
+                      )}
+                      {onDelete && (
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => onDelete(row)}
+                        >
+                          Deletar
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </TableCell>
             )}
           </TableRow>
@@ -138,14 +185,18 @@ export function DataTable<T extends { id: string; amount?: number }>({
       {data.length > 0 && (
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={columns.length - 1}></TableCell>
-            <TableCell className="font-bold text-right">
+            <TableCell
+              colSpan={columns.length - 1 + (bulkMode ? 1 : 0)}
+            ></TableCell>
+
+            <TableCell className="font-bold text-right py-2">
               Total:{" "}
               {totalAmount.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
               })}
             </TableCell>
+
             {showActions && <TableCell></TableCell>}
           </TableRow>
         </TableFooter>

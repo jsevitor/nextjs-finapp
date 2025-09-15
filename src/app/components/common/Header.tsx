@@ -6,7 +6,7 @@ type HeaderProps = {
 export default function Header({ children, className }: HeaderProps) {
   return (
     <header
-      className={`flex items-center justify-between w-full mb-3 mt-2 ${className}`}
+      className={`flex flex-col gap-4 md:flex-row md:items-center md:justify-between w-full mb-3 mt-2 ${className}`}
     >
       {children}
     </header>
