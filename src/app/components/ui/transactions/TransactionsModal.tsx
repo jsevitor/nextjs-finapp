@@ -18,7 +18,9 @@ import { useCategoryStore } from "@/stores/categoryStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { is } from "date-fns/locale";
 export default function TransactionsModal({
+  isLoading,
   isOpen,
   transaction,
   onChange,
@@ -113,12 +115,9 @@ export default function TransactionsModal({
               <div className="grid gap-3">
                 <Label htmlFor="monthReference">Mês de Referência</Label>
                 <Select
+                  value={transaction.monthReference?.toString() ?? ""}
                   onValueChange={(value) =>
                     handleChange("monthReference", Number(value))
-                  }
-                  defaultValue={
-                    transaction.monthReference?.toString() ??
-                    (new Date().getMonth() + 1).toString()
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -137,12 +136,9 @@ export default function TransactionsModal({
               <div className="grid gap-3">
                 <Label htmlFor="yearReference">Ano de Referência</Label>
                 <Select
+                  value={transaction.yearReference?.toString() ?? ""}
                   onValueChange={(value) =>
                     handleChange("yearReference", Number(value))
-                  }
-                  defaultValue={
-                    transaction.yearReference?.toString() ??
-                    new Date().getFullYear().toString()
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -226,6 +222,19 @@ export default function TransactionsModal({
             </div>
 
             <div className="grid gap-3">
+              <Label htmlFor="amount">Valor</Label>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                value={transaction.amount}
+                onChange={(e) =>
+                  handleChange("amount", parseFloat(e.target.value))
+                }
+              />
+            </div>
+
+            <div className="grid gap-3">
               <Label htmlFor="installmentNumber">Parcela</Label>
               <Input
                 id="installmentNumber"
@@ -249,19 +258,6 @@ export default function TransactionsModal({
               />
             </div>
 
-            <div className="grid gap-3">
-              <Label htmlFor="amount">Valor</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={transaction.amount}
-                onChange={(e) =>
-                  handleChange("amount", parseFloat(e.target.value))
-                }
-              />
-            </div>
-
             <div className="col-span-2 flex justify-center mt-4">
               <Button
                 type="button"
@@ -275,7 +271,13 @@ export default function TransactionsModal({
                 type="submit"
                 className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/80 w-1/2 lg:w-1/3"
               >
-                {transaction.id ? "Salvar" : "Adicionar"}
+                {transaction.id
+                  ? isLoading
+                    ? "Carregando..."
+                    : "Salvar"
+                  : isLoading
+                  ? "Carregando..."
+                  : "Adicionar"}
               </Button>
             </div>
           </form>
