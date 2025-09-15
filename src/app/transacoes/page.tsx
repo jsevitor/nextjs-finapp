@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingDown } from "lucide-react";
+import { Loader2, RefreshCw, Trash2, TrendingDown } from "lucide-react";
 import { DataTable } from "../components/common/DataTable";
 import { Column } from "../types/tableColumns";
 import Header from "../components/common/Header";
@@ -17,16 +17,28 @@ import { Transaction, useTransactionsStore } from "@/stores/transactionsStore";
 import TransactionsModal from "../components/ui/transactions/TransactionsModal";
 import { formatCurrencyBRL, formatDateBR } from "@/utils/format";
 import { useTransactionFilters } from "@/hooks/useTransactionFilters";
+import FilterMinValue from "../components/filters/FilterMinValue";
+import FilterMaxValue from "../components/filters/FilterMaxValue";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 export default function TransactionsPage() {
-  const { filters, transactions, isLoading, setFilter, setFilters } =
+  const { filters, transactions, isLoading, setFilter } =
     useTransactionFilters();
 
-  const { addTransaction, updateTransaction, removeTransaction } =
-    useTransactionsStore();
+  const {
+    isLoading: isLoadingTransactions,
+    fetchTransactions,
+    addTransaction,
+    updateTransaction,
+    removeTransaction,
+    removeTransactionsBulk,
+  } = useTransactionsStore();
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isBeingEdited, setIsBeingEdited] = useState<Transaction | null>(null);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const columns: Column<Transaction>[] = [
     { key: "date", label: "Data", render: (row) => formatDateBR(row.date) },
@@ -75,34 +87,76 @@ export default function TransactionsPage() {
     try {
       if (!transaction.id) {
         await addTransaction(transaction);
+        setIsBeingEdited({
+          id: "",
+          date: new Date().toISOString().split("T")[0],
+          business: "",
+          description: "",
+          amount: 0,
+          cardId: filters.card || "",
+          profileId: "",
+          categoryId: "",
+          installmentNumber: 1,
+          installmentTotal: 1,
+          parentId: null,
+          monthReference: filters.monthReference,
+          yearReference: filters.yearReference,
+        });
+        toast.success("Transação salva com sucesso!");
       } else {
         await updateTransaction(transaction);
+        setModalIsOpen(false);
+        toast.success("Transação atualizada com sucesso!");
+        setIsBeingEdited(null);
       }
-      setModalIsOpen(false);
-      setIsBeingEdited(null);
     } catch (err) {
       console.error("Erro ao salvar transação:", err);
+      toast.error("Erro ao salvar transação!");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await removeTransaction(id);
+      toast.success("Transação removida com sucesso!");
     } catch (err) {
       console.error("Erro ao deletar transação:", err);
+      toast.error("Erro ao deletar transação!");
     }
   };
 
+  const handleBulkDelete = async () => {
+    try {
+      await removeTransactionsBulk(selectedIds);
+      toast.success("Transações removidas com sucesso!");
+      setSelectedIds([]);
+      setBulkMode(false);
+    } catch (err) {
+      console.error("Erro ao deletar em lote:", err);
+      toast.error("Erro ao deletar em lote!");
+    }
+  };
+
+  const handleUpdateTable = async () => {
+    try {
+      await fetchTransactions(filters);
+      toast.success("Tabela atualizada com sucesso!");
+    } catch (err) {
+      console.error("Erro ao atualizar tabela:", err);
+      toast.error("Erro ao atualizar tabela!");
+    }
+  };
   return (
     <PageContainer>
       <Header>
         <HeaderTitle title="Transações">
-          <TrendingDown className="h-8 w-8" />
+          <TrendingDown className="h-8 md:w-8" />
         </HeaderTitle>
 
         <ButtonVariant typeAction="add" action={handleOpenAddModal} />
 
         <TransactionsModal
+          isLoading={isLoadingTransactions}
           isOpen={modalIsOpen}
           transaction={isBeingEdited}
           onChange={setIsBeingEdited}
@@ -135,14 +189,54 @@ export default function TransactionsPage() {
           value={filters.card || ""}
           onChange={(cardId) => setFilter("card", cardId)}
         />
+
+        <FilterMinValue filters={filters} setFilter={setFilter} />
+
+        <FilterMaxValue filters={filters} setFilter={setFilter} />
       </FiltersContainer>
+
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Button
+            variant={bulkMode ? "secondary" : "outline"}
+            onClick={() => {
+              setBulkMode(!bulkMode);
+              setSelectedIds([]);
+            }}
+          >
+            {bulkMode ? "Cancelar seleção" : "Selecionar múltiplas"}
+          </Button>
+          {bulkMode && selectedIds.length > 0 && (
+            <Button variant="destructive" onClick={handleBulkDelete}>
+              <Trash2 className="mr-2 h-4 w-4" /> Excluir Selecionados
+            </Button>
+          )}
+        </div>
+
+        <div>
+          <Button
+            variant="outline"
+            onClick={() => fetchTransactions(filters)}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            {isLoading ? "Atualizando..." : "Atualizar"}
+          </Button>
+        </div>
+      </div>
 
       <div className="border rounded-2xl overflow-hidden">
         <DataTable
-          caption="Lista de transações"
           columns={columns}
           data={transactions}
           isLoading={isLoading}
+          bulkMode={bulkMode}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onEdit={(row) => {
             setIsBeingEdited(row);
             setModalIsOpen(true);
