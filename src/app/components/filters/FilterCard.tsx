@@ -23,7 +23,7 @@ export default function FilterCard({ value, onChange }: FilterCardProps) {
 
   return (
     <div className="flex flex-col flex-1">
-      <label className="text-sm font-medium">Cartão</label>
+      <label className="text-sm font-medium mb-1">Cartão</label>
       <Select
         value={value && value !== "" ? value : "all"}
         onValueChange={(v) => onChange(v === "all" ? "" : v)}

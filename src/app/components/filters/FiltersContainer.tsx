@@ -8,13 +8,6 @@ import {
 import { Filter, X, Search } from "lucide-react";
 import { useTransactionFilters } from "@/hooks/useTransactionFilters";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useState } from "react";
 
 type FiltersContainerProps = {
@@ -24,7 +17,7 @@ type FiltersContainerProps = {
 export function FiltersContainer({ children }: FiltersContainerProps) {
   const { filters, setFilter, resetFilters, hasActiveFilters } =
     useTransactionFilters();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Collapsible
@@ -48,64 +41,22 @@ export function FiltersContainer({ children }: FiltersContainerProps) {
       </CollapsibleTrigger>
 
       <CollapsibleContent className="mt-4">
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {children}
-          </div>
-
-          {/* Filtros de valor */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Valor mínimo</label>
-              <Input
-                type="number"
-                placeholder="0,00"
-                value={filters.minValue}
-                onChange={(e) => setFilter("minValue", e.target.value)}
-                className="w-full"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Valor máximo</label>
-              <Input
-                type="number"
-                placeholder="0,00"
-                value={filters.maxValue}
-                onChange={(e) => setFilter("maxValue", e.target.value)}
-                className="w-full"
-              />
-            </div>
           </div>
 
           {/* Busca por texto */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Buscar em</label>
-              <Select
-                value={filters.searchField}
-                onValueChange={(value) => setFilter("searchField", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o campo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Nenhum</SelectItem>
-                  <SelectItem value="business">Estabelecimento</SelectItem>
-                  <SelectItem value="description">Descrição</SelectItem>
-                  <SelectItem value="category">Categoria</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col md:col-span-2">
-              <label className="text-sm font-medium mb-1">Termo de busca</label>
+            <div className="flex flex-col md:col-span-3">
+              <label className="text-sm font-medium mb-1">Buscar</label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-[calc(50%-0.5rem)] h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Digite o termo..."
+                  placeholder="Digite para buscar em qualquer campo..."
                   value={filters.searchTerm}
                   onChange={(e) => setFilter("searchTerm", e.target.value)}
                   className="pl-10"
-                  disabled={!filters.searchField}
                 />
               </div>
             </div>

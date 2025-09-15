@@ -26,7 +26,7 @@ export default function FilterCategory({
 
   return (
     <div className="flex flex-col flex-1">
-      <label className="text-sm font-medium">Categoria</label>
+      <label className="text-sm font-medium mb-1">Categoria</label>
       <Select
         value={value && value !== "" ? value : "all"}
         onValueChange={(v) => onChange(v === "all" ? "" : v)}
