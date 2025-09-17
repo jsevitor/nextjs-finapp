@@ -1,8 +1,11 @@
+// src/types/modal.ts
 import { Card } from "@/stores/cardStore";
+import { GeneralExpense } from "@/stores/generalExpesnsesStore";
 import { Profile } from "@/stores/profileStore";
 import { Transaction } from "@/stores/transactionsStore";
 
 export type ModalProps<T> = {
+  isLoading?: boolean;
   isOpen: boolean;
   onChange: (data: T) => void;
   onClose: () => void;
@@ -19,4 +22,8 @@ export type TransactionsModalProps = ModalProps<Transaction> & {
 
 export type ProfilesModalProps = ModalProps<Profile> & {
   profile: Profile | null;
+};
+
+export type GeneralExpensesModalProps = ModalProps<Transaction> & {
+  generalExpense: GeneralExpense | null;
 };
