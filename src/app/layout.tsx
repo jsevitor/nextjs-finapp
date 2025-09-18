@@ -6,6 +6,8 @@ import { AppSidebar } from "./components/layout/AppSidebar";
 import AuthSessionProvider from "@/components/auth/SessionProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const redHatDisplay = Red_Hat_Display({
   variable: "--font-red-hat-display",
@@ -32,11 +34,23 @@ export default async function RootLayout({
           {session ? (
             <SidebarProvider>
               <AppSidebar />
-              <main className="w-full p-4 2xl:px-8">{children}</main>
+              <main className="w-full mt-14 p-4 2xl:px-8">{children}</main>
             </SidebarProvider>
           ) : (
             <main className="w-full p-4 2xl:px-8">{children}</main>
           )}
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
         </AuthSessionProvider>
       </body>
     </html>
