@@ -1,0 +1,692 @@
+[
+  {
+    "date": "2025-04-01",
+    "amount": 19.97,
+    "business": "Feirão dos Calçados",
+    "categoryId": "cmf8gkeax000ggisg43cqt3y2",
+    "description": "Sapato",
+    "installmentNumber": 4,
+    "installmentTotal": 4,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqs5l000dgiecfkcy7srd"
+  },
+  {
+    "date": "2025-05-14",
+    "amount": 48.77,
+    "business": "Amazon",
+    "categoryId": "cmf8gkxu000ngisgwr9cbcd9",
+    "description": "Livros BG",
+    "installmentNumber": 3,
+    "installmentTotal": 3,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-01",
+    "amount": 20.03,
+    "business": "Posto Itamaraty",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-01",
+    "amount": 73.62,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqni2000bgiecfiqh46ff"
+  },
+  {
+    "date": "2025-07-01",
+    "amount": 10.99,
+    "business": "Americanas",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Chocolates",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-01",
+    "amount": 52.55,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-01",
+    "amount": 70.79,
+    "business": "Bahamas",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-02",
+    "amount": 30.0,
+    "business": "Posto Alto da Cidade",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-02",
+    "amount": 32.39,
+    "business": "Amazon",
+    "categoryId": "cmf8gkibw000jgisgtytd043b",
+    "description": "Protetor Solar",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-02",
+    "amount": 14.95,
+    "business": "Apple Bill",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Max",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-02",
+    "amount": 14.95,
+    "business": "Apple Bill",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Max",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-02",
+    "amount": 21.9,
+    "business": "Amazon Prime Canais",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Apple TV+",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfei3lhp0051giq08en92ol3"
+  },
+  {
+    "date": "2025-07-03",
+    "amount": 36.29,
+    "business": "Prático",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-04",
+    "amount": 40.0,
+    "business": "Posto Expopec",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-04",
+    "amount": 19.78,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-04",
+    "amount": 38.81,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqni2000bgiecfiqh46ff"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 34.9,
+    "business": "Burger King",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Ituiutaba Burguer",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 17.0,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 9.99,
+    "business": "Americanas",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Chocolates",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 28.45,
+    "business": "Shopee",
+    "categoryId": "cmf8gkxu000ngisgwr9cbcd9",
+    "description": "Formas",
+    "installmentNumber": 1,
+    "installmentTotal": 2,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 34.95,
+    "business": "Shopee",
+    "categoryId": "cmf8gkxu000ngisgwr9cbcd9",
+    "description": "Presente",
+    "installmentNumber": 1,
+    "installmentTotal": 2,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-05",
+    "amount": 26.38,
+    "business": "Amazon",
+    "categoryId": "cmf8gkxu000ngisgwr9cbcd9",
+    "description": "Bobbie Goods",
+    "installmentNumber": 1,
+    "installmentTotal": 2,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-06",
+    "amount": 5.9,
+    "business": "Apple Bill",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "iCloud",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-07",
+    "amount": 15.49,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 20.33,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Pizza",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 20.33,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Pizza",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 20.33,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Pizza",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqni2000bgiecfiqh46ff"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 7.12,
+    "business": "Danielabreude",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": null,
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 18.91,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-08",
+    "amount": 11.37,
+    "business": "Abc",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Rosca Salgada",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-10",
+    "amount": 24.9,
+    "business": "Mercado Livre",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Meli+",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-10",
+    "amount": 20.0,
+    "business": "Algar",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Recarga",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-10",
+    "amount": 25.0,
+    "business": "Algar",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Recarga",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqs5l000dgiecfkcy7srd"
+  },
+  {
+    "date": "2025-07-11",
+    "amount": 40.0,
+    "business": "Posto 5.5",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-11",
+    "amount": 47.07,
+    "business": "Brunozi",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Carnes",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-11",
+    "amount": 23.4,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Açai",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-11",
+    "amount": 46.8,
+    "business": "IFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Açai",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-12",
+    "amount": 21.3,
+    "business": "Casa dos Paes",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Lanche",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-12",
+    "amount": 49.3,
+    "business": "Supra",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-13",
+    "amount": 5.95,
+    "business": "iFood",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Clube iFood",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-14",
+    "amount": 25.97,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-16",
+    "amount": 10.0,
+    "business": "Open Motos",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Conserto Tripė",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-16",
+    "amount": 17.91,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-16",
+    "amount": 33.67,
+    "business": "Prático",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-16",
+    "amount": 30.0,
+    "business": "Posto 5.5",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustível",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-17",
+    "amount": 29.69,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-17",
+    "amount": 10.0,
+    "business": "Padaria",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Lanche",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-19",
+    "amount": 8.9,
+    "business": "Apple Bill",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "OneDrive",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-19",
+    "amount": 23.33,
+    "business": "Prático",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-19",
+    "amount": 40.0,
+    "business": "Posto Alto da Cidade",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-19",
+    "amount": 46.85,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-20",
+    "amount": 34.0,
+    "business": "Restaurante Colonial",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Marmitex",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqs5l000dgiecfkcy7srd"
+  },
+  {
+    "date": "2025-07-22",
+    "amount": 50.75,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-22",
+    "amount": 13.99,
+    "business": "ABC",
+    "categoryId": "cmfc17y950000gis7bybwhvtm",
+    "description": "Remédio",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-25",
+    "amount": 13.0,
+    "business": "AHG",
+    "categoryId": "cmf8gkibw000jgisgtytd043b",
+    "description": "Baralho",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-25",
+    "amount": 10.98,
+    "business": "Martminas",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-25",
+    "amount": 23.4,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Açai",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-25",
+    "amount": 23.4,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Açai",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-25",
+    "amount": 23.4,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Açai",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqni2000bgiecfiqh46ff"
+  },
+  {
+    "date": "2025-07-26",
+    "amount": 24.5,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Lanche",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-26",
+    "amount": 24.5,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Lanche",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-26",
+    "amount": 17.0,
+    "business": "iFood",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Lanche",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqni2000bgiecfiqh46ff"
+  },
+  {
+    "date": "2025-07-27",
+    "amount": 8.6,
+    "business": "Frutos da Terra",
+    "categoryId": "cmf8gh5tc000gigisgphc10551",
+    "description": "Trufa",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-28",
+    "amount": 15.4,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Compras",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-29",
+    "amount": 40.0,
+    "business": "Posto Expopec",
+    "categoryId": "cmf8gj6mf000bgisgekfrs5q6",
+    "description": "Combustivel",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbhqgpo0009giecqnfsj5pr"
+  },
+  {
+    "date": "2025-07-30",
+    "amount": 35.0,
+    "business": "Espaço Lephie",
+    "categoryId": "cmf8gk5fs000fgisg7x8z69u8",
+    "description": "Corte de Cabelo",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-30",
+    "amount": 42.23,
+    "business": "Supra",
+    "categoryId": "cmfc17460000gisrdj4kwt81",
+    "description": "Carnes",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  },
+  {
+    "date": "2025-07-30",
+    "amount": 31.99,
+    "business": "Mundo das Utilidades",
+    "categoryId": "cmf8gkibw000jgisgtytd043b",
+    "description": "Abajur",
+    "monthReference": 8,
+    "yearReference": 2025,
+    "profileId": "cmfbh7g9r0007gieceuvvhf6h"
+  }
+]
