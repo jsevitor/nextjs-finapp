@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 
 interface ExpenseCategoryData {
   categoryId: string;
@@ -90,7 +91,9 @@ export default function ExpenseByCategoryChart({
 
       <CardContent>
         {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <div className="w-full flex items-center justify-center p-8">
+            <Loader2 className="h-12 w-12 animate-spin mr-2 text-primary/30" />
+          </div>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Nenhum gasto encontrado

@@ -1,7 +1,17 @@
-// app/api/transacoes/route.ts - API CORRIGIDA
+// src/app/api/transacoes/route.ts
 import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
+
+// Definir um tipo para o objeto 'where' que será passado para a consulta
+interface TransactionWhere {
+  monthReference: number;
+  yearReference: number;
+  card?: { userId: string };
+  cardId?: string;
+  categoryId?: string;
+  amount?: { gte?: number; lte?: number };
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,8 +46,8 @@ export async function GET(req: NextRequest) {
     const minValue = searchParams.get("minValue");
     const maxValue = searchParams.get("maxValue");
 
-    // Construir cláusula where
-    const where: any = {
+    // Construir cláusula where com o tipo TransactionWhere
+    const where: TransactionWhere = {
       monthReference,
       yearReference,
       card: {
@@ -58,8 +68,6 @@ export async function GET(req: NextRequest) {
       if (minValue) where.amount.gte = parseFloat(minValue);
       if (maxValue) where.amount.lte = parseFloat(maxValue);
     }
-
-    // console.log("🔍 Buscando transações com filtros:", where);
 
     // Buscar transações
     const transactions = await db.transaction.findMany({

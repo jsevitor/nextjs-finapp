@@ -3,6 +3,19 @@ import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
+// Definindo o tipo de filtro para a variável 'where'
+type GeneralExpenseWhere = {
+  monthReference: number;
+  yearReference: number;
+  userId: string;
+  categoryId?: string;
+  profileId?: string;
+  amount?: {
+    gte?: number;
+    lte?: number;
+  };
+};
+
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -37,7 +50,7 @@ export async function GET(req: NextRequest) {
     const maxValue = searchParams.get("maxValue");
 
     // Construir cláusula where
-    const where: any = {
+    const where: GeneralExpenseWhere = {
       monthReference,
       yearReference,
       userId: user.id,

@@ -3,6 +3,23 @@ import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
+// Definindo uma interface para os dados de cada transação
+interface ImportTransaction {
+  date: string; // Formato de data (ISO string ou similar)
+  business?: string;
+  description?: string;
+  amount: number;
+  cardId?: string;
+  profileId?: string;
+  categoryId?: string;
+  categoryName?: string;
+  installmentNumber?: number;
+  installmentTotal?: number;
+  parentId?: string;
+  monthReference?: number;
+  yearReference?: number;
+}
+
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
 
@@ -11,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json();
+    const body: ImportTransaction[] = await req.json(); // Usando o tipo ImportTransaction
 
     if (!Array.isArray(body)) {
       return NextResponse.json(
@@ -54,7 +71,7 @@ export async function POST(req: NextRequest) {
       categorias.map((cat) => [cat.name.toLowerCase(), cat.id])
     );
 
-    const transacoes = body.map((t: any, idx: number) => {
+    const transacoes = body.map((t, idx) => {
       let categoriaId: string | undefined;
 
       if (t.categoryId) {
@@ -80,7 +97,6 @@ export async function POST(req: NextRequest) {
         yearReference = t.yearReference;
       } else {
         // Calcula com base na data (empurrando para fatura do mês seguinte)
-        const dataTransacao = new Date(t.date);
         monthReference = dataTransacao.getMonth() + 2;
         yearReference = dataTransacao.getFullYear();
 

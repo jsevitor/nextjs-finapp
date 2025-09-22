@@ -1,7 +1,8 @@
-// stores/transactionsStore.ts - REFORMULADO
+// stores/transactionsStore.ts
 import { create } from "zustand";
 import { Filters } from "./filtersStore";
 
+// Definindo o tipo para Transaction
 export type Transaction = {
   id: string;
   date: string;
@@ -89,14 +90,14 @@ export const useTransactionsStore = create<TransactionsStore>((set, get) => ({
         throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: Transaction[] = await response.json();
 
       if (!Array.isArray(data)) {
         throw new Error("Formato de resposta inválido");
       }
 
       // Normaliza os dados
-      const normalizedTransactions = data.map((t: any) => ({
+      const normalizedTransactions = data.map((t) => ({
         ...t,
         amount: Number(t.amount) || 0,
         installmentNumber: t.installmentNumber || 1,

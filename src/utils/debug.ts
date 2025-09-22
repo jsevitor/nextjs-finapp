@@ -1,5 +1,23 @@
-// utils/debug.ts - UTILITÁRIO DE DEBUG
-export const debugFilters = (filters: any, context: string = "") => {
+// Definir o tipo para os filtros
+interface Filter {
+  monthReference?: number;
+  yearReference?: number;
+  card?: string;
+  category?: string;
+  minValue?: number;
+  maxValue?: number;
+  searchField?: string;
+  searchTerm?: string;
+}
+
+// Definir o tipo para uma transação
+interface Transaction {
+  amount?: number;
+  yearReference: number;
+  monthReference: number;
+}
+
+export const debugFilters = (filters: Filter, context: string = "") => {
   console.group(`🔧 Debug Filters ${context}`);
   console.table({
     Mês: filters.monthReference,
@@ -15,7 +33,7 @@ export const debugFilters = (filters: any, context: string = "") => {
 };
 
 export const debugTransactions = (
-  transactions: any[],
+  transactions: Transaction[],
   context: string = ""
 ) => {
   console.group(`📊 Debug Transactions ${context}`);
@@ -36,7 +54,7 @@ export const debugTransactions = (
       )}`;
       acc[key] = (acc[key] || 0) + 1;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     console.table(byPeriod);
 

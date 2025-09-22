@@ -75,13 +75,14 @@ export const useHousingBillsStore = create<HousingBillsStore>((set, get) => ({
         throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: HousingBill[] = await response.json();
 
       if (!Array.isArray(data)) {
         throw new Error("Formato de resposta inválido");
       }
 
-      const normalizedBills = data.map((hb: any) => ({
+      // Normaliza os dados com o tipo HousingBill
+      const normalizedBills = data.map((hb) => ({
         ...hb,
         amount: Number(hb.amount) || 0,
         name: hb.name || "",

@@ -16,6 +16,7 @@ import { useCardStore, Card } from "@/stores/cardStore";
 
 import NubankLogo from "@/../public/logos/nubank.png";
 import MercadoPagoLogo from "@/../public/logos/mercado-pago.png";
+import { StaticImageData } from "next/image";
 
 export default function CardsPage() {
   const { data: session } = useSession();
@@ -28,7 +29,7 @@ export default function CardsPage() {
     fetchCards();
   }, [fetchCards]);
 
-  const cardStyles: Record<string, { color: string; logo: any }> = {
+  const cardStyles: Record<string, { color: string; logo: StaticImageData }> = {
     Nubank: {
       color: "#8612D2",
       logo: NubankLogo,

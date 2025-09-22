@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 interface ExpenseProfileData {
   profileId: string;
@@ -58,7 +59,9 @@ export default function ExpenseByProfileChart({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <div className="w-full flex items-center justify-center p-8">
+            <Loader2 className="h-12 w-12 animate-spin mr-2 text-primary/30" />
+          </div>
         ) : (
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">

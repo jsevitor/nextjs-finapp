@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrencyBRL } from "@/utils/format";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 
 type SummaryData = {
   transactionsTotal: number;
@@ -32,7 +32,11 @@ export default function SummaryCards({
   }, [month, year]);
 
   if (!data) {
-    return <p className="text-sm text-muted-foreground">Carregando...</p>;
+    return (
+      <div className="w-full flex items-center justify-center p-8 border rounded-2xl shadow">
+        <Loader2 className="h-12 w-12 animate-spin mr-2 text-primary/30" />
+      </div>
+    );
   }
 
   return (

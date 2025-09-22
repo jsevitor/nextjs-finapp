@@ -1,6 +1,7 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ptBR } from "date-fns/locale";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type DueDateCalendar = {
@@ -54,7 +55,9 @@ export default function DueDateCalendar({
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-4 items-center">
         {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <div className="w-full flex items-center justify-center p-8">
+            <Loader2 className="h-12 w-12 animate-spin mr-2 text-primary/30" />
+          </div>
         ) : (
           <>
             <Calendar

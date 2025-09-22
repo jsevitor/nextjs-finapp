@@ -1,4 +1,4 @@
-// stores/generalExpensesStore.ts - REFORMULADO
+// src/stores/generalExpensesStore.ts
 import { create } from "zustand";
 import { Filters } from "./filtersStore";
 
@@ -78,13 +78,14 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
           throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data: GeneralExpense[] = await response.json();
 
         if (!Array.isArray(data)) {
           throw new Error("Formato de resposta inválido");
         }
 
-        const normalizedExpenses = data.map((ge: any) => ({
+        // Normaliza os dados com o tipo GeneralExpense
+        const normalizedExpenses = data.map((ge) => ({
           ...ge,
           amount: Number(ge.amount) || 0,
           description: ge.description || null,

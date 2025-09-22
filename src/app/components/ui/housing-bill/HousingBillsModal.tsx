@@ -1,5 +1,3 @@
-// src/app/components/ui/housing-bill/HousingBillsModal.tsx
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +35,11 @@ export default function HousingBillsModal({
 }: HousingBillsModalProps) {
   if (!bill) return null;
 
-  const handleChange = (field: keyof HousingBill, value: any) => {
+  const handleChange = (
+    field: keyof HousingBill,
+    value: string | number | null
+  ) => {
+    // Aqui ajustamos o tipo de `value` para ser string | number | null, conforme esperado nos campos
     onChange({ ...bill, [field]: value });
   };
 

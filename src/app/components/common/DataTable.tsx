@@ -51,9 +51,8 @@ export function DataTable<T extends { id: string; amount?: number }>({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin mr-2" />
-        Carregando transações...
+      <div className="flex items-center justify-center p-8 w-full">
+        <Loader2 className="h-12 w-12 animate-spin mr-2 text-foreground/50" />
       </div>
     );
   }

@@ -24,7 +24,9 @@ export default function WelcomeCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full flex lg:justify-end">
-        <p className="w-full text-center lg:text-right">{currentDate}</p>
+        <p className="w-full text-center lg:text-right text-foreground/50">
+          {currentDate}
+        </p>
       </CardContent>
     </Card>
   );

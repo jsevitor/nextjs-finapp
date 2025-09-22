@@ -1,12 +1,12 @@
 import { Card } from "@/stores/cardStore";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
 
 type Props = {
   card: Card;
   color: string;
-  logo: any;
+  logo: StaticImageData; // Alterado para 'StaticImageData' se logo for uma importação do Next.js
   onEdit?: (card: Card) => void;
   onDelete?: (card: Card) => void;
 };

@@ -1,4 +1,3 @@
-// components/ui/general-expenses/GeneralExpensesModal.tsx - REFORMULADO
 "use client";
 
 import { useEffect } from "react";
@@ -40,7 +39,11 @@ export default function GeneralExpensesModal({
 
   if (!expense) return null;
 
-  const handleChange = (field: keyof GeneralExpense, value: any) => {
+  // Define a função handleChange com um tipo específico para 'value'
+  const handleChange = (
+    field: keyof GeneralExpense,
+    value: string | number | null
+  ) => {
     onChange({ ...expense, [field]: value });
   };
 
@@ -106,6 +109,7 @@ export default function GeneralExpensesModal({
             </SelectContent>
           </Select>
         </div>
+
         <div className="grid gap-3">
           <Label>Descrição</Label>
           <Input

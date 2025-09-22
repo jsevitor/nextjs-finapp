@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import { db } from "./prisma";
 import type { NextAuthOptions } from "next-auth";
-import { Role } from "@prisma/client";
+import { Role, User } from "@prisma/client"; // Importando o tipo User
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -25,7 +25,8 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role as Role;
+        // Aqui, vamos garantir que user seja do tipo User
+        token.role = (user as User).role || Role.USER;
       }
       return token;
     },

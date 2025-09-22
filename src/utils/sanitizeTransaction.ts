@@ -1,7 +1,26 @@
-// src/utils/sanitizeTransaction.ts
 import { Transaction } from "@/stores/transactionsStore";
 
-export function sanitizeTransaction(transaction: Transaction): any {
+// Definindo o tipo para a transação sanitizada
+export type SanitizedTransaction = Omit<
+  Transaction,
+  | "amount"
+  | "installmentNumber"
+  | "installmentTotal"
+  | "description"
+  | "business"
+  | "parentId"
+> & {
+  amount: number;
+  installmentNumber: number | null;
+  installmentTotal: number | null;
+  description: string | null;
+  business: string | null;
+  parentId: string | null;
+};
+
+export function sanitizeTransaction(
+  transaction: Transaction
+): SanitizedTransaction {
   return {
     ...transaction,
     amount: Number(transaction.amount),

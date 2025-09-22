@@ -19,8 +19,6 @@ export async function GET(req: NextRequest) {
   // Datas para filtragem
   const startCurrent = new Date(year, month - 1, 1);
   const endCurrent = new Date(year, month, 1);
-  const startPrev = new Date(prevYear, prevMonth - 1, 1);
-  const endPrev = new Date(prevYear, prevMonth, 1);
 
   // --- Transactions ---
   const currentTransactions = await db.transaction.aggregate({
