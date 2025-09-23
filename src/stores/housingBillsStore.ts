@@ -1,6 +1,6 @@
 // src/stores/housingBillsStore.ts
 import { create } from "zustand";
-import { Filters } from "./filtersStore";
+import { Filters } from "../app/types/filters";
 
 export type HousingBill = {
   id: string;
@@ -59,8 +59,10 @@ export const useHousingBillsStore = create<HousingBillsStore>((set, get) => ({
       });
 
       if (filters.category) params.append("category", filters.category);
-      if (filters.minValue) params.append("minValue", filters.minValue);
-      if (filters.maxValue) params.append("maxValue", filters.maxValue);
+      if (filters.minValue !== undefined)
+        params.append("minValue", String(filters.minValue));
+      if (filters.maxValue !== undefined)
+        params.append("maxValue", String(filters.maxValue));
 
       const url = `/api/moradia?${params.toString()}`;
       console.log("🔍 Buscando contas de moradia:", url);

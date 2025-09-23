@@ -1,6 +1,6 @@
 // src/stores/generalExpensesStore.ts
 import { create } from "zustand";
-import { Filters } from "./filtersStore";
+import { Filters } from "../app/types/filters";
 
 export type GeneralExpense = {
   id: string;
@@ -62,8 +62,10 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
         });
 
         if (filters.category) params.append("category", filters.category);
-        if (filters.minValue) params.append("minValue", filters.minValue);
-        if (filters.maxValue) params.append("maxValue", filters.maxValue);
+        if (filters.minValue !== undefined)
+          params.append("minValue", String(filters.minValue));
+        if (filters.maxValue !== undefined)
+          params.append("maxValue", String(filters.maxValue));
 
         const url = `/api/despesas-gerais?${params.toString()}`;
         console.log("🔍 Buscando despesas gerais:", url);

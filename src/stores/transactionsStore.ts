@@ -1,6 +1,6 @@
 // stores/transactionsStore.ts
 import { create } from "zustand";
-import { Filters } from "./filtersStore";
+import { Filters } from "../app/types/filters";
 
 // Definindo o tipo para Transaction
 export type Transaction = {
@@ -72,8 +72,10 @@ export const useTransactionsStore = create<TransactionsStore>((set, get) => ({
       // Adiciona filtros opcionais apenas se tiverem valor
       if (filters.card) params.append("card", filters.card);
       if (filters.category) params.append("category", filters.category);
-      if (filters.minValue) params.append("minValue", filters.minValue);
-      if (filters.maxValue) params.append("maxValue", filters.maxValue);
+      if (filters.minValue !== undefined)
+        params.append("minValue", String(filters.minValue));
+      if (filters.maxValue !== undefined)
+        params.append("maxValue", String(filters.maxValue));
 
       const url = `/api/transacoes?${params.toString()}`;
       console.log("🔍 Buscando transações:", url);

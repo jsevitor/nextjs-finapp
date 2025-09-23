@@ -12,7 +12,7 @@ export const useTransactionFilters = () => {
   // Busca inicial e sempre que filtros obrigatórios mudarem
   useEffect(() => {
     if (filters.monthReference && filters.yearReference) {
-      debugFilters(filters, "Effect Triggered");
+      // debugFilters(filters, "Effect Triggered");
       fetchTransactions(filters);
     } else {
       console.warn("⚠️ Filtros obrigatórios ausentes:", {
@@ -32,7 +32,7 @@ export const useTransactionFilters = () => {
 
   // Debug das transações sempre que mudarem
   useEffect(() => {
-    debugTransactions(transactions, "Transactions Updated");
+    // debugTransactions(transactions, "Transactions Updated");
   }, [transactions]);
 
   // Filtro local para busca por texto (mais eficiente que backend)
@@ -58,7 +58,7 @@ export const useTransactionFilters = () => {
 
   const applyFilters = useCallback(() => {
     if (filters.monthReference && filters.yearReference) {
-      debugFilters(filters, "Manual Apply");
+      // debugFilters(filters, "Manual Apply");
       fetchTransactions(filters);
     }
   }, [filters, fetchTransactions]);

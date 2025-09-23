@@ -2,11 +2,9 @@
 import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
+import { RouteContext } from "@/types/route-context";
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,7 +12,9 @@ export async function PUT(
   try {
     const body = await req.json();
     const { name, amount, dueDate, categoryId, profileId } = body;
-    const { id } = params;
+
+    const params = await conext.params;
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     if (!name || !amount || !dueDate) {
       return NextResponse.json(
@@ -71,16 +71,14 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const { id } = params;
+    const params = await conext.params;
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     const existingBill = await db.housingBill.findFirst({
       where: { id, userId: user.id },

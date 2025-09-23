@@ -2,17 +2,16 @@
 import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
+import { RouteContext } from "@/types/route-context";
 
-interface RouteParams {
-  params: { id: string };
-}
-
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export async function PUT(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = params;
+  const params = await conext.params;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
   if (!id) return NextResponse.json({ error: "ID inválido." }, { status: 400 });
 
   try {
@@ -84,16 +83,14 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const { id } = params;
+    const params = await conext.params;
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
     const existingExpense = await db.generalExpense.findFirst({
       where: { id, userId: user.id },
