@@ -1,6 +1,5 @@
 import { useEffect, useCallback, useMemo } from "react";
 import { useFiltersStore } from "@/stores/filtersStore";
-import { debugFilters } from "@/utils/debug";
 import { useGeneralExpensesStore } from "@/stores/generalExpesnsesStore";
 
 export const useGeneralExpensesFilters = () => {
@@ -16,7 +15,7 @@ export const useGeneralExpensesFilters = () => {
   // Busca inicial e sempre que filtros obrigatórios mudarem
   useEffect(() => {
     if (filters.monthReference && filters.yearReference) {
-      debugFilters(filters, "GeneralExpenses Effect Triggered");
+      // debugFilters(filters, "GeneralExpenses Effect Triggered");
       fetchGeneralExpenses(filters);
     } else {
       console.warn("⚠️ Filtros obrigatórios ausentes:", {
@@ -55,7 +54,7 @@ export const useGeneralExpensesFilters = () => {
 
   const applyFilters = useCallback(() => {
     if (filters.monthReference && filters.yearReference) {
-      debugFilters(filters, "GeneralExpenses Manual Apply");
+      // debugFilters(filters, "GeneralExpenses Manual Apply");
       fetchGeneralExpenses(filters);
     }
   }, [filters, fetchGeneralExpenses]);

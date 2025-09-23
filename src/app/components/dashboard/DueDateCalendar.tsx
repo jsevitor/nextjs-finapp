@@ -44,7 +44,6 @@ export default function DueDateCalendar({
   const dueDates = dueDate.map(
     (v) => new Date(v.dueDate.split("T")[0] + "T00:00:00")
   );
-  const markedDays = dueDates.map((d) => d.toDateString());
 
   return (
     <Card className="w-full">

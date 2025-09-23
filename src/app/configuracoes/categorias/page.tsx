@@ -14,13 +14,8 @@ import { Column } from "@/app/types/tableColumns";
 import { useCategoryStore, Category } from "@/stores/categoryStore";
 
 export default function CategoriesPage() {
-  const {
-    categories,
-    isLoading,
-    fetchCategories,
-    addCategory,
-    removeCategory,
-  } = useCategoryStore();
+  const { categories, fetchCategories, addCategory, removeCategory } =
+    useCategoryStore();
 
   const [newCategory, setNewCategory] = useState("");
   const [isAdding, setIsAdding] = useState(false);

@@ -1,7 +1,6 @@
 // hooks/useHousingBillsFilters.ts
 import { useEffect, useCallback, useMemo } from "react";
 import { useFiltersStore } from "@/stores/filtersStore";
-import { debugFilters } from "@/utils/debug";
 import { useHousingBillsStore } from "@/stores/housingBillsStore";
 import { useCategoryStore } from "@/stores/categoryStore";
 
@@ -47,7 +46,7 @@ export const useHousingBillsFilters = () => {
 
   const applyFilters = useCallback(() => {
     if (filters.monthReference && filters.yearReference) {
-      debugFilters(filters, "HousingBills Manual Apply");
+      // debugFilters(filters, "HousingBills Manual Apply");
       fetchHousingBills(filters);
     }
   }, [filters, fetchHousingBills]);

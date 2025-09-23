@@ -8,13 +8,6 @@ import {
   Legend,
 } from "recharts";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
 interface ExpenseCategoryData {
@@ -34,20 +27,20 @@ const COLORS = [
   "#6b7280",
 ];
 
-const monthLabels = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
+// const monthLabels = [
+//   "Janeiro",
+//   "Fevereiro",
+//   "Março",
+//   "Abril",
+//   "Maio",
+//   "Junho",
+//   "Julho",
+//   "Agosto",
+//   "Setembro",
+//   "Outubro",
+//   "Novembro",
+//   "Dezembro",
+// ];
 
 export default function ExpenseByCategoryChart({
   month,

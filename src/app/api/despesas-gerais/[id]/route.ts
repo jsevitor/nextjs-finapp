@@ -3,18 +3,29 @@ import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+interface RouteParams {
+  params: { id: string };
+}
+
+export async function PUT(req: NextRequest, { params }: RouteParams) {
   const user = await getCurrentUser();
   if (!user?.id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { id } = params;
+  if (!id) return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+
   try {
-    const body = await req.json();
+    type ExpenseUpdateBody = {
+      description?: string;
+      amount: number;
+      dueDate: string;
+      categoryId?: string;
+      profileId?: string;
+    };
+
+    const body: ExpenseUpdateBody = await req.json();
     const { description, amount, dueDate, categoryId, profileId } = body;
-    const { id } = params;
 
     if (!amount || !dueDate) {
       return NextResponse.json(
@@ -26,11 +37,13 @@ export async function PUT(
     const existingExpense = await db.generalExpense.findFirst({
       where: { id, userId: user.id },
     });
-    if (!existingExpense)
+
+    if (!existingExpense) {
       return NextResponse.json(
         { error: "Despesa não encontrada ou não autorizada." },
         { status: 403 }
       );
+    }
 
     const parsedDate = new Date(dueDate);
     const monthReference = parsedDate.getMonth() + 1;

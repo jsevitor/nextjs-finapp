@@ -137,15 +137,6 @@ export default function TransactionsPage() {
     }
   };
 
-  const handleUpdateTable = async () => {
-    try {
-      await fetchTransactions(filters);
-      toast.success("Tabela atualizada com sucesso!");
-    } catch (err) {
-      console.error("Erro ao atualizar tabela:", err);
-      toast.error("Erro ao atualizar tabela!");
-    }
-  };
   return (
     <PageContainer>
       <Header>

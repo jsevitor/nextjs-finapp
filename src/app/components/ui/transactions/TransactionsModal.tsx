@@ -18,7 +18,7 @@ import { useCategoryStore } from "@/stores/categoryStore";
 import { useCardStore } from "@/stores/cardStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { is } from "date-fns/locale";
+
 export default function TransactionsModal({
   isLoading,
   isOpen,
@@ -31,9 +31,9 @@ export default function TransactionsModal({
   const { cards, fetchCards } = useCardStore();
   const { profiles, fetchProfiles } = useProfileStore();
 
-  const { importTransactions, fetchTransactions } = useTransactionsStore();
+  const { importTransactions } = useTransactionsStore();
   const [jsonInput, setJsonInput] = useState("");
-  const [isImporting, setIsImporting] = useState(false);
+  const [isImporting] = useState(false);
 
   useEffect(() => {
     fetchProfiles();
