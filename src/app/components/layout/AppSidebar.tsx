@@ -1,25 +1,42 @@
 "use client";
 
-import { useState } from "react";
 import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useSessionStore } from "@/stores/sessionStore";
+import UserAvatar from "../common/UserAvatar";
+import { signOut } from "next-auth/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronUp,
   LayoutDashboard,
   TrendingUp,
   TrendingDown,
   House,
   PieChart,
   CreditCard,
-  Calendar,
   Settings,
-  ChevronUp,
   LogOut,
-  Menu as MenuIcon,
 } from "lucide-react";
-import { useSessionStore } from "@/stores/sessionStore";
-import UserAvatar from "../common/UserAvatar";
-import { signOut } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-
-import * as Dialog from "@radix-ui/react-dialog";
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -28,114 +45,89 @@ const items = [
   { title: "Despesas Moradia", url: "/despesas-moradia", icon: House },
   { title: "Despesas Gerais", url: "/despesas-gerais", icon: PieChart },
   { title: "Cartões", url: "/cartoes", icon: CreditCard },
-  { title: "Calendário", url: "/calendario", icon: Calendar },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 
 export function AppSidebar() {
   const { user } = useSessionStore((state) => state.session);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
-      {/* ---------------- TOPBAR ---------------- */}
-      <header className="fixed top-0 left-0 right-0 bg-sidebar text-sidebar-foreground h-14 flex items-center justify-between px-4 shadow-md z-50">
-        <span className="font-black text-xl">FINAPP</span>
+      {/* Trigger fixo só no mobile */}
+      <div className="absolute left-2 top-2 lg:hidden">
+        <SidebarTrigger />
+      </div>
 
-        {/* Hamburger apenas no mobile */}
-        <Button
-          variant="ghost"
-          className="md:hidden"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <MenuIcon />
-        </Button>
-      </header>
+      <Sidebar collapsible="icon" className="relative">
+        <SidebarContent>
+          <SidebarGroup className="h-full">
+            <SidebarGroupLabel className="my-4 flex justify-between font-black text-2xl transition-all duration-200">
+              <span className="group-data-[collapsible=icon]:hidden text-sidebar-accent-foreground">
+                FINAPP
+              </span>
+              {/* Trigger só no desktop */}
+              <SidebarTrigger className="group-data-[collapsible=icon]:justify-start group-data-[state=expanded]:justify-end hidden lg:flex" />
+            </SidebarGroupLabel>
 
-      {/* ---------------- MOBILE DRAWER ---------------- */}
-      <Dialog.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40 md:hidden" />
+            <SidebarSeparator className="my-2 2xl:my-4" />
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => {
+                  const isActive = pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        size="lg"
+                        className={cn(
+                          "transition-colors",
+                          isActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                            : "hover:bg-sidebar-accent/50"
+                        )}
+                      >
+                        <Link href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
 
-          <Dialog.Content className="fixed top-0 left-0 h-full w-64 bg-sidebar text-sidebar-foreground p-4 z-50 md:hidden flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <span className="font-black text-2xl">FINAPP</span>
-              <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
-                ✕
-              </Button>
-            </div>
-
-            <nav className="flex flex-col gap-3">
-              {items.map((item) => (
-                <a
-                  key={item.title}
-                  href={item.url}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-hover transition-colors"
-                  onClick={() => setDrawerOpen(false)}
+            <SidebarSeparator className="my-2 2xl:my-4" />
+            <SidebarFooter>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton className="cursor-pointer h-12">
+                    <UserAvatar url={user?.image ?? ""} />
+                    <span>{user?.name}</span>
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  className="w-[--radix-popper-anchor-width] border border-sidebar-border bg-sidebar text-sidebar-foreground p-2 rounded-2xl cursor-pointer"
                 >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
-              ))}
-            </nav>
-
-            <div className="flex-1" />
-
-            <div className="mt-4 border-t border-sidebar-border pt-4">
-              <div className="flex items-center gap-2">
-                <UserAvatar url={user?.image ?? ""} />
-                <span className="text-sm font-medium">{user?.name}</span>
-                <ChevronUp className="ml-auto" />
-              </div>
-              <Button
-                variant="ghost"
-                className="w-full mt-2 justify-start"
-                onClick={() => signOut()}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sair
-              </Button>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-
-      {/* ---------------- DESKTOP MENU ---------------- */}
-      <aside className="hidden md:flex fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-64 bg-sidebar text-sidebar-foreground flex-col p-4">
-        <nav className="flex flex-col gap-3">
-          {items.map((item) => (
-            <a
-              key={item.title}
-              href={item.url}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-sidebar-hover transition-colors"
-            >
-              <item.icon />
-              <span>{item.title}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex-1" />
-
-        <div className="mt-4 border-t border-sidebar-border pt-4">
-          <div className="flex items-center gap-2">
-            <UserAvatar url={user?.image ?? ""} />
-            <span className="text-sm font-medium">{user?.name}</span>
-            <ChevronUp className="ml-auto" />
-          </div>
-          <Button
-            variant="ghost"
-            className="w-full mt-2 justify-start"
-            onClick={() => signOut()}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
-        </div>
-      </aside>
-
-      {/* ---------------- ESPAÇAMENTO PARA CONTEÚDO ---------------- */}
-      <div className="pt-14 md:pl-64" />
+                  <DropdownMenuItem className="w-52 group-data-[collapsible=icon]:w-fit">
+                    <Button
+                      variant="ghost"
+                      className="w-full hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      onClick={() => signOut()}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign out</span>
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarFooter>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
     </>
   );
 }

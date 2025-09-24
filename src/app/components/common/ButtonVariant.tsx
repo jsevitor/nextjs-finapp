@@ -6,7 +6,7 @@ type ButtonVariantProps = {
   typeAction?: "save" | "close" | "add" | "edit" | "delete";
   action?: () => void;
   label?: string;
-  icon?: React.ReactNode; // <- Corrigido: não é string
+  icon?: React.ReactNode;
   className?: string;
 };
 
@@ -19,7 +19,6 @@ export function ButtonVariant({
 }: ButtonVariantProps) {
   const base = "px-4 py-1 rounded-lg cursor-pointer";
 
-  // Variações de estilos (mapeadas para variantes do componente Button)
   const variants: Record<
     NonNullable<ButtonVariantProps["typeAction"]>,
     "default" | "destructive" | "ghost"

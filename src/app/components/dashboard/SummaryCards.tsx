@@ -40,31 +40,30 @@ export default function SummaryCards({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 2xl:gap-4">
       {/* Card 1: Total Transactions + Variação */}
-      <Card>
+      <Card className="bg-blue-500 text-white shadow-md">
         <CardHeader>
-          <CardTitle>Total do mês (Transactions)</CardTitle>
+          <CardTitle>Total do mês</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center lg:items-start gap-2">
           <p className="text-2xl font-bold">
             {formatCurrencyBRL(data.transactionsTotal)}
           </p>
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
+          <p className="text-sm flex items-center">
             {data.transactionsVariation >= 0 ? (
-              <ArrowUp className="w-4 h-4 text-red-500" />
+              <ArrowUp className="w-4 h-4 text-red-700 bg-red-500 rounded-full lg:mr-1" />
             ) : (
-              <ArrowDown className="w-4 h-4 text-green-500" />
+              <ArrowDown className="w-4 h-4 text-green-700 bg-green-500 rounded-full lg:mr-1" />
             )}
-            {Math.abs(data.transactionsVariation).toFixed(1)}% vs mês passado
+            {Math.abs(data.transactionsVariation).toFixed(1)}% mês passado
           </p>
         </CardContent>
       </Card>
 
-      {/* Card 2: Gastos com Moradia */}
-      <Card>
+      <Card className="bg-red-500 text-white shadow-md">
         <CardHeader>
-          <CardTitle>Gastos com Moradia</CardTitle>
+          <CardTitle>Gastos Moradia</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-center lg:text-left text-2xl font-bold">
@@ -73,8 +72,7 @@ export default function SummaryCards({
         </CardContent>
       </Card>
 
-      {/* Card 3: Top 3 maiores gastos */}
-      <Card className="md:col-span-2">
+      <Card className="md:col-span-2 bg-muted shadow-md">
         <CardHeader>
           <CardTitle>Top 3 gastos</CardTitle>
         </CardHeader>
@@ -83,7 +81,7 @@ export default function SummaryCards({
             data.topTransactions.map((t, idx) => (
               <div
                 key={idx}
-                className="flex flex-col items-center p-2 lg:p-4 lg:w-full rounded-2xl bg-muted-foreground/10"
+                className="flex flex-col items-center p-2 2xl:p-4 w-full rounded-2xl bg-background"
               >
                 <span className="text-xs text-muted-foreground">
                   {t.description}
