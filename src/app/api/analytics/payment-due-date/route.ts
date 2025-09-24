@@ -44,6 +44,28 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    // Cards
+    const cards = await db.card.findMany({
+      select: {
+        id: true,
+        name: true,
+        dueDay: true,
+      },
+    });
+
+    // Transactions
+    const transactions = await db.transaction.findMany({
+      where: {
+        monthReference: month,
+        yearReference: year,
+      },
+      select: {
+        id: true,
+        cardId: true,
+        amount: true,
+      },
+    });
+
     // Normaliza
     const result = [
       ...general.map((g) => ({
@@ -60,6 +82,22 @@ export async function GET(req: NextRequest) {
         amount: h.amount,
         categoryName: h.category?.name ?? null,
       })),
+      ...cards.map((c) => {
+        // soma das transactions do cartão
+        const cardTransactions = transactions.filter((t) => t.cardId === c.id);
+        const totalAmount = cardTransactions.reduce(
+          (sum, t) => sum + t.amount,
+          0
+        );
+
+        return {
+          id: c.id,
+          description: c.name,
+          dueDate: new Date(year, month - 1, c.dueDay),
+          amount: totalAmount,
+          categoryName: null,
+        };
+      }),
     ];
 
     return NextResponse.json(result, { status: 200 });

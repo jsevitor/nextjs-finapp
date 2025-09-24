@@ -63,10 +63,16 @@ export async function GET(req: NextRequest) {
       where.categoryId = categoryId;
     }
 
-    if (minValue || maxValue) {
-      where.amount = {};
-      if (minValue) where.amount.gte = parseFloat(minValue);
-      if (maxValue) where.amount.lte = parseFloat(maxValue);
+    // Validar valores numéricos antes de adicionar no filtro
+    const amount: { gte?: number; lte?: number } = {};
+    if (minValue && !isNaN(Number(minValue))) {
+      amount.gte = Number(minValue);
+    }
+    if (maxValue && !isNaN(Number(maxValue))) {
+      amount.lte = Number(maxValue);
+    }
+    if (Object.keys(amount).length > 0) {
+      where.amount = amount;
     }
 
     // Buscar transações
@@ -107,112 +113,6 @@ export async function GET(req: NextRequest) {
     console.error("❌ Erro ao buscar transações:", error);
     return NextResponse.json(
       { error: "Erro interno do servidor" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  const user = await getCurrentUser();
-
-  if (!user || !user.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const body = await req.json();
-    const {
-      date,
-      business,
-      description,
-      amount,
-      cardId,
-      profileId,
-      categoryId,
-      installmentNumber = 1,
-      installmentTotal = 1,
-      parentId,
-      monthReference: bodyMonth,
-      yearReference: bodyYear,
-    } = body;
-
-    // Validação
-    if (!date || !amount || !cardId || !profileId || !categoryId) {
-      return NextResponse.json(
-        { error: "Data, valor, cartão, perfil e categoria são obrigatórios." },
-        { status: 400 }
-      );
-    }
-
-    // Verificar se o cartão pertence ao usuário
-    const card = await db.card.findFirst({
-      where: { id: cardId, userId: user.id },
-    });
-
-    if (!card) {
-      return NextResponse.json(
-        { error: "Cartão não encontrado ou não autorizado" },
-        { status: 403 }
-      );
-    }
-
-    const parsedDate = new Date(date);
-
-    // 🔥 Prioriza valores do body (usados no cadastro manual)
-    let monthReference = bodyMonth ?? parsedDate.getMonth() + 2;
-    let yearReference = bodyYear ?? parsedDate.getFullYear();
-
-    if (monthReference > 12) {
-      monthReference = 1;
-      yearReference++;
-    }
-
-    const transaction = await db.transaction.create({
-      data: {
-        date: parsedDate,
-        business: business || null,
-        description: description || null,
-        amount: Number(amount),
-        cardId,
-        profileId,
-        categoryId,
-        installmentNumber,
-        installmentTotal,
-        parentId: parentId || null,
-        monthReference,
-        yearReference,
-      },
-      include: {
-        category: { select: { id: true, name: true } },
-        profile: { select: { id: true, name: true } },
-        card: { select: { id: true, name: true } },
-      },
-    });
-
-    const result = {
-      id: transaction.id,
-      date: transaction.date.toISOString(),
-      business: transaction.business,
-      description: transaction.description,
-      amount: Number(transaction.amount),
-      cardId: transaction.cardId,
-      profileId: transaction.profileId,
-      categoryId: transaction.categoryId,
-      installmentNumber: transaction.installmentNumber,
-      installmentTotal: transaction.installmentTotal,
-      parentId: transaction.parentId,
-      monthReference: transaction.monthReference,
-      yearReference: transaction.yearReference,
-      categoryName: transaction.category?.name,
-      cardName: transaction.card?.name,
-      profileName: transaction.profile?.name,
-    };
-
-    return NextResponse.json(result, { status: 201 });
-  } catch (error) {
-    console.error("❌ Erro ao criar transação:", error);
-    return NextResponse.json(
-      { error: "Erro ao criar transação" },
       { status: 500 }
     );
   }
