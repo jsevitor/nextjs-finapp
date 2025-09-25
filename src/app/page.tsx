@@ -18,26 +18,16 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { months } from "@/utils/months";
+import UpcomingDueDates from "./components/dashboard/UpcomingDueDates";
+import { useCardStore } from "@/stores/cardStore";
 
 export default function Home() {
   const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [month, setMonth] = useState(now.getMonth() + 2);
   const [year, setYear] = useState(now.getFullYear());
 
-  const months = [
-    { value: 1, label: "Janeiro" },
-    { value: 2, label: "Fevereiro" },
-    { value: 3, label: "Março" },
-    { value: 4, label: "Abril" },
-    { value: 5, label: "Maio" },
-    { value: 6, label: "Junho" },
-    { value: 7, label: "Julho" },
-    { value: 8, label: "Agosto" },
-    { value: 9, label: "Setembro" },
-    { value: 10, label: "Outubro" },
-    { value: 11, label: "Novembro" },
-    { value: 12, label: "Dezembro" },
-  ];
+  const { cards, fetchCards } = useCardStore();
 
   return (
     <PageContainer>
@@ -47,7 +37,7 @@ export default function Home() {
         </HeaderTitle>
       </Header>
 
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center gap-2 2xl:gap-4">
         <WelcomeCard />
         {/* Selects para mês/ano */}
         <div className="flex md:flex-col lg:flex-row justify-center gap-2">
@@ -55,7 +45,7 @@ export default function Home() {
             value={String(month)}
             onValueChange={(v) => setMonth(Number(v))}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px] h-10 bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -71,7 +61,7 @@ export default function Home() {
             value={String(year)}
             onValueChange={(v) => setYear(Number(v))}
           >
-            <SelectTrigger className="w-[140px] lg:w-[100px]">
+            <SelectTrigger className="w-[140px] lg:w-[100px]  bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -82,12 +72,13 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 2xl:gap-4">
         <SummaryCards month={month} year={year} />
+        <UpcomingDueDates month={month} year={year} />
         <DueDateCalendar month={month} year={year} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 2xl:gap-4">
         <ExpenseByProfileChart month={month} year={year} />
         <ExpensesByCategoryChart month={month} year={year} />
       </div>

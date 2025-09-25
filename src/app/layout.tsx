@@ -34,7 +34,9 @@ export default async function RootLayout({
           {session ? (
             <SidebarProvider>
               <AppSidebar />
-              <main className="w-full mt-14 p-4 2xl:px-8">{children}</main>
+              <main className="w-full p-4 2xl:px-8 mt-4 lg:mt-0">
+                {children}
+              </main>
             </SidebarProvider>
           ) : (
             <main className="w-full p-4 2xl:px-8">{children}</main>
