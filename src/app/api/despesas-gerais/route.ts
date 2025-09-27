@@ -56,12 +56,13 @@ export async function GET(req: NextRequest) {
       userId: user.id,
     };
 
-    if (categoryId) where.categoryId = categoryId;
-    if (profileId) where.profileId = profileId;
-    if (minValue || maxValue) {
+    const min = parseFloat(minValue || "");
+    const max = parseFloat(maxValue || "");
+
+    if (!isNaN(min) || !isNaN(max)) {
       where.amount = {};
-      if (minValue) where.amount.gte = parseFloat(minValue);
-      if (maxValue) where.amount.lte = parseFloat(maxValue);
+      if (!isNaN(min)) where.amount.gte = min;
+      if (!isNaN(max)) where.amount.lte = max;
     }
 
     console.log("🔍 Buscando despesas gerais com filtros:", where);

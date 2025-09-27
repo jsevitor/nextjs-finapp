@@ -46,18 +46,17 @@ export async function GET(req: NextRequest) {
     const maxValue = searchParams.get("maxValue");
 
     // Usando o tipo HousingBillWhere para a variável 'where'
-    const where: HousingBillWhere = {
+    const where: any = {
       monthReference,
       yearReference,
       userId: user.id,
     };
 
-    if (categoryId) where.categoryId = categoryId;
-    if (profileId) where.profileId = profileId;
-    if (minValue || maxValue) {
+    // filtra por valor só se for number
+    if (!isNaN(Number(minValue)) || !isNaN(Number(maxValue))) {
       where.amount = {};
-      if (minValue) where.amount.gte = parseFloat(minValue);
-      if (maxValue) where.amount.lte = parseFloat(maxValue);
+      if (!isNaN(Number(minValue))) where.amount.gte = Number(minValue);
+      if (!isNaN(Number(maxValue))) where.amount.lte = Number(maxValue);
     }
 
     const bills = await db.housingBill.findMany({
