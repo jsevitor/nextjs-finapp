@@ -13,11 +13,11 @@ type FiltersStore = {
 const getDefaultFilters = (): Filters => {
   const today = new Date();
   return {
-    monthReference: today.getMonth() + 1,
+    monthReference: today.getMonth() + 2,
     yearReference: today.getFullYear(),
     category: "",
     profile: "",
-    card: "cmf8p8s45000rgisgz387jrxq", // id default de cartão
+    card: "cmf8p8s45000rgisgz387jrxq",
     minValue: null,
     maxValue: null,
     searchField: "",

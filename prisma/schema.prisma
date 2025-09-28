@@ -125,22 +125,35 @@ model HousingBill {
 }
 
 model GeneralExpense {
-  id          String   @id @default(cuid())
-  description String?
-  amount      Float
-  dueDate     DateTime
-  monthReference Int @default(1)
-  yearReference  Int @default(2025)
-  categoryId  String?
-  userId      String
-  profileId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  description    String?
+  business       String?             // Nome do estabelecimento
+  amount         Float
+  date           DateTime            // Data da compra
+  dueDay         Int                 // Apenas o dia do vencimento (ex: 10)
+  monthReference Int     @default(1) // Mês base da compra
+  yearReference  Int     @default(2025)
+  
+   // Parcelamento
+  installmentNumber Int? // número da parcela (ex: 2)
+  installmentTotal  Int? // total de parcelas (ex: 10)
+  parentId          String? // id da compra "principal", se quiser vincular
+
+  categoryId     String?
+  userId         String
+  profileId      String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   user     User      @relation(fields: [userId], references: [id])
   profile  Profile?  @relation(fields: [profileId], references: [id])
   category Category? @relation(fields: [categoryId], references: [id])
+
+  parent   GeneralExpense?  @relation("Installments", fields: [parentId], references: [id])
+  children GeneralExpense[] @relation("Installments")
 }
+
 
 model Account {
   id                String  @id @default(cuid())

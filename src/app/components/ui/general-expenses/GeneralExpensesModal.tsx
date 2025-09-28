@@ -39,12 +39,12 @@ export default function GeneralExpensesModal({
 
   if (!expense) return null;
 
-  // Define a função handleChange com um tipo específico para 'value'
+  // Função de atualização do estado
   const handleChange = (
-    field: keyof GeneralExpense,
+    field: keyof GeneralExpense | "installments", // adicionamos installments
     value: string | number | null
   ) => {
-    onChange({ ...expense, [field]: value });
+    onChange({ ...expense, [field]: value } as GeneralExpense);
   };
 
   const handleSubmit = () => {
@@ -70,7 +70,7 @@ export default function GeneralExpensesModal({
             }
             defaultValue={
               expense.monthReference?.toString() ??
-              (new Date().getMonth() + 1).toString()
+              (new Date().getMonth() + 2).toString()
             }
           >
             <SelectTrigger className="w-full">
@@ -157,6 +157,18 @@ export default function GeneralExpensesModal({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* 🚀 Novo campo Parcelas */}
+        <div className="grid gap-3">
+          <Label>Parcelas</Label>
+          <Input
+            type="number"
+            value={(expense as any).installments ?? ""}
+            onChange={(e) =>
+              handleChange("installments", Number(e.target.value) || 0)
+            }
+          />
         </div>
       </form>
 

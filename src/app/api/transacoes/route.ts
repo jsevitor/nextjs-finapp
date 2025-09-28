@@ -117,3 +117,59 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+
+    const {
+      date,
+      business,
+      description,
+      amount,
+      cardId,
+      profileId,
+      categoryId,
+      installmentNumber,
+      installmentTotal,
+      parentId,
+      monthReference,
+      yearReference,
+    } = body;
+
+    const newTransaction = await db.transaction.create({
+      data: {
+        date: new Date(date),
+        business,
+        description,
+        amount,
+        cardId,
+        profileId,
+        categoryId,
+        installmentNumber,
+        installmentTotal,
+        parentId,
+        monthReference,
+        yearReference,
+      },
+      include: {
+        category: { select: { id: true, name: true } },
+        profile: { select: { id: true, name: true } },
+        card: { select: { id: true, name: true } },
+      },
+    });
+
+    return NextResponse.json(newTransaction, { status: 201 });
+  } catch (error) {
+    console.error("❌ Erro ao adicionar transação:", error);
+    return NextResponse.json(
+      { error: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
+}

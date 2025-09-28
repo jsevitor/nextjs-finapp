@@ -65,7 +65,7 @@ export default function HousingBillsModal({
               onValueChange={(v) => handleChange("monthReference", Number(v))}
               defaultValue={
                 bill.monthReference?.toString() ??
-                (new Date().getMonth() + 1).toString()
+                (new Date().getMonth() + 2).toString()
               }
             >
               <SelectTrigger className="w-full">

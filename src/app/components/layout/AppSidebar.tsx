@@ -55,11 +55,18 @@ export function AppSidebar() {
   return (
     <>
       {/* Trigger fixo só no mobile */}
-      <div className="absolute left-2 top-2 lg:hidden">
+      <div className="absolute left-2 top-2 lg:hidden z-50">
         <SidebarTrigger />
       </div>
 
-      <Sidebar collapsible="icon" className="relative">
+      <Sidebar
+        collapsible="icon"
+        className={cn(
+          "fixed left-0 top-0 z-40 h-screen border-r bg-sidebar transition-all",
+          "lg:[data-state=collapsed]", // em lg começa fechada
+          "2xl:[data-state=expanded]" // em xl ou maior começa aberta
+        )}
+      >
         <SidebarContent>
           <SidebarGroup className="h-full">
             <SidebarGroupLabel className="my-4 flex justify-between font-black text-2xl transition-all duration-200">
