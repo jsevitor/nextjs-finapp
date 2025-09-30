@@ -19,6 +19,7 @@ import {
 type GeneralExpensesModalProps = {
   isOpen: boolean;
   expense: GeneralExpense | null;
+  isLoading: boolean;
   onChange: (expense: GeneralExpense | null) => void;
   onClose: () => void;
   onSubmit: (expense: GeneralExpense) => void;
@@ -27,6 +28,7 @@ type GeneralExpensesModalProps = {
 export default function GeneralExpensesModal({
   isOpen,
   expense,
+  isLoading,
   onChange,
   onClose,
   onSubmit,
@@ -39,15 +41,15 @@ export default function GeneralExpensesModal({
 
   if (!expense) return null;
 
-  // Função de atualização do estado
   const handleChange = (
-    field: keyof GeneralExpense | "installments", // adicionamos installments
+    field: keyof GeneralExpense,
     value: string | number | null
   ) => {
     onChange({ ...expense, [field]: value } as GeneralExpense);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     onSubmit(expense);
   };
 
@@ -58,23 +60,20 @@ export default function GeneralExpensesModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <HeaderModal
-        title={expense.id ? "Editar Transação" : "Adicionar Transação"}
+        title={expense.id ? "Editar Despesa" : "Adicionar Despesa"}
       />
 
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mt-4">
         <div className="grid gap-3">
-          <Label htmlFor="monthReference">Mês de Referência</Label>
+          <Label>Mês de Referência</Label>
           <Select
             onValueChange={(value) =>
               handleChange("monthReference", Number(value))
             }
-            defaultValue={
-              expense.monthReference?.toString() ??
-              (new Date().getMonth() + 2).toString()
-            }
+            value={expense.monthReference?.toString() ?? ""}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Mês" />
+              <SelectValue placeholder="Selecione o mês" />
             </SelectTrigger>
             <SelectContent className="z-[9999]">
               {monthOptions.map((month) => (
@@ -87,18 +86,15 @@ export default function GeneralExpensesModal({
         </div>
 
         <div className="grid gap-3">
-          <Label htmlFor="yearReference">Ano de Referência</Label>
+          <Label>Ano de Referência</Label>
           <Select
             onValueChange={(value) =>
               handleChange("yearReference", Number(value))
             }
-            defaultValue={
-              expense.yearReference?.toString() ??
-              new Date().getFullYear().toString()
-            }
+            value={expense.yearReference?.toString() ?? ""}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Ano" />
+              <SelectValue placeholder="Selecione o ano" />
             </SelectTrigger>
             <SelectContent className="z-[9999]">
               {yearOptions.map((year) => (
@@ -115,6 +111,16 @@ export default function GeneralExpensesModal({
           <Input
             value={expense.description || ""}
             onChange={(e) => handleChange("description", e.target.value)}
+            placeholder="Ex: Supermercado"
+          />
+        </div>
+
+        <div className="grid gap-3">
+          <Label>Estabelecimento</Label>
+          <Input
+            value={expense.business || ""}
+            onChange={(e) => handleChange("business", e.target.value)}
+            placeholder="Ex: Mercado do Zé"
           />
         </div>
 
@@ -122,21 +128,42 @@ export default function GeneralExpensesModal({
           <Label>Valor</Label>
           <Input
             type="number"
-            value={expense.amount}
+            value={String(expense.amount ?? "")}
             onChange={(e) =>
               handleChange("amount", parseFloat(e.target.value) || 0)
             }
+            placeholder="0.00"
+            min={0}
+            step="0.01"
           />
         </div>
 
         <div className="grid gap-3">
-          <Label>Vencimento</Label>
+          <Label>Data da Compra</Label>
           <Input
             type="date"
-            value={expense.dueDate ? expense.dueDate.split("T")[0] : ""}
+            value={expense.date ? expense.date.split("T")[0] : ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              handleChange("date", val ? `${val}T00:00:00Z` : null);
+            }}
+          />
+        </div>
+
+        <div className="grid gap-3">
+          <Label>Dia de Vencimento</Label>
+          <Input
+            type="number"
+            min={1}
+            max={31}
+            value={expense.dueDay?.toString() ?? ""}
             onChange={(e) =>
-              handleChange("dueDate", new Date(e.target.value).toISOString())
+              handleChange(
+                "dueDay",
+                e.target.value === "" ? null : Number(e.target.value)
+              )
             }
+            placeholder="Ex: 10"
           />
         </div>
 
@@ -144,10 +171,10 @@ export default function GeneralExpensesModal({
           <Label>Categoria</Label>
           <Select
             onValueChange={(value) => handleChange("categoryId", value)}
-            defaultValue={expense.categoryId || ""}
+            value={expense.categoryId || ""}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecione" />
+              <SelectValue placeholder="Selecione a categoria" />
             </SelectTrigger>
             <SelectContent className="z-[9999]">
               {categories.map((category) => (
@@ -159,27 +186,41 @@ export default function GeneralExpensesModal({
           </Select>
         </div>
 
-        {/* 🚀 Novo campo Parcelas */}
         <div className="grid gap-3">
-          <Label>Parcelas</Label>
+          <Label>Total de Parcelas</Label>
           <Input
             type="number"
-            value={(expense as any).installments ?? ""}
+            min={1}
+            value={String(expense.installmentTotal ?? 1)}
             onChange={(e) =>
-              handleChange("installments", Number(e.target.value) || 0)
+              handleChange(
+                "installmentTotal",
+                e.target.value === "" ? 1 : Number(e.target.value)
+              )
             }
           />
         </div>
-      </form>
 
-      <div className="col-span-2 flex justify-center mt-8 gap-4">
-        <Button variant="outline" onClick={onClose} className="w-1/2 lg:w-1/3">
-          Cancelar
-        </Button>
-        <Button onClick={handleSubmit} className="w-1/2 lg:w-1/3">
-          Salvar
-        </Button>
-      </div>
+        <div className="col-span-2 flex justify-center mt-8 gap-4">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={onClose}
+            className="w-1/2 lg:w-1/3"
+          >
+            Cancelar
+          </Button>
+          <Button type="submit" className="w-1/2 lg:w-1/3">
+            {expense.id
+              ? isLoading
+                ? "Carregando..."
+                : "Salvar"
+              : isLoading
+              ? "Carregando..."
+              : "Adicionar"}
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 }

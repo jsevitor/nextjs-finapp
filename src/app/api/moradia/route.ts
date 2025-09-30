@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     const maxValue = searchParams.get("maxValue");
 
     // Usando o tipo HousingBillWhere para a variável 'where'
-    const where: any = {
+    const where: HousingBillWhere = {
       monthReference,
       yearReference,
       userId: user.id,

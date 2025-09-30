@@ -1,9 +1,10 @@
-// app/api/despesas-gerais/route.ts
+// src/app/api/despesas-gerais/route.ts
 import { db } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
+import { GeneralExpense, Category, Profile } from "@prisma/client";
 
-// Definindo o tipo de filtro para a variável 'where'
 type GeneralExpenseWhere = {
   monthReference: number;
   yearReference: number;
@@ -16,17 +17,19 @@ type GeneralExpenseWhere = {
   };
 };
 
+type GeneralExpenseWithIncludes = GeneralExpense & {
+  category: Pick<Category, "id" | "name"> | null;
+  profile: Pick<Profile, "id" | "name"> | null;
+};
+
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-
     if (!user || !user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
-
-    // Parâmetros obrigatórios (mês e ano)
     const monthReference = parseInt(
       searchParams.get("monthReference") || "0",
       10
@@ -43,19 +46,14 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Filtros opcionais
-    const categoryId = searchParams.get("category");
-    const profileId = searchParams.get("profile");
-    const minValue = searchParams.get("minValue");
-    const maxValue = searchParams.get("maxValue");
-
-    // Construir cláusula where
     const where: GeneralExpenseWhere = {
       monthReference,
       yearReference,
       userId: user.id,
     };
 
+    const minValue = searchParams.get("minValue");
+    const maxValue = searchParams.get("maxValue");
     const min = parseFloat(minValue || "");
     const max = parseFloat(maxValue || "");
 
@@ -65,11 +63,9 @@ export async function GET(req: NextRequest) {
       if (!isNaN(max)) where.amount.lte = max;
     }
 
-    console.log("🔍 Buscando despesas gerais com filtros:", where);
-
     const generalExpenses = await db.generalExpense.findMany({
       where,
-      orderBy: { dueDate: "asc" },
+      orderBy: { date: "asc" },
       include: {
         category: { select: { id: true, name: true } },
         profile: { select: { id: true, name: true } },
@@ -78,19 +74,25 @@ export async function GET(req: NextRequest) {
 
     const result = generalExpenses.map((ge) => ({
       id: ge.id,
-      description: ge.description,
+      description: ge.description ?? null,
+      business: ge.business ?? null,
       amount: Number(ge.amount),
-      dueDate: ge.dueDate,
-      categoryId: ge.categoryId,
-      profileId: ge.profileId,
-      categoryName: ge.category?.name || null,
-      profileName: ge.profile?.name || null,
+      date: ge.date.toISOString(),
+      dueDay: ge.dueDay,
+      categoryId: ge.categoryId ?? null,
+      profileId: ge.profileId ?? null,
+      categoryName: ge.category?.name ?? null,
+      profileName: ge.profile?.name ?? null,
       userId: ge.userId,
       monthReference: ge.monthReference,
       yearReference: ge.yearReference,
+      installmentNumber: ge.installmentNumber ?? null,
+      installmentTotal: ge.installmentTotal ?? null,
+      parentId: ge.parentId ?? null,
+      createdAt: ge.createdAt.toISOString(),
+      updatedAt: ge.updatedAt.toISOString(),
     }));
 
-    console.log(`✅ Encontradas ${result.length} despesas gerais`);
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     console.error("❌ Erro ao buscar despesas gerais:", error);
@@ -109,53 +111,110 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { description, amount, dueDate, categoryId, profileId } = body;
+    const expensesInput = Array.isArray(body) ? body : [body];
 
-    if (!amount || !dueDate) {
-      return NextResponse.json(
-        { error: "Valor e data de vencimento são obrigatórios." },
-        { status: 400 }
+    const createdAll: GeneralExpenseWithIncludes[] = [];
+
+    for (const exp of expensesInput) {
+      const categoryId =
+        exp.categoryId && exp.categoryId !== "" ? exp.categoryId : null;
+      const profileId =
+        exp.profileId && exp.profileId !== "" ? exp.profileId : null;
+
+      let purchaseDate: Date;
+      if (exp.date && typeof exp.date === "string") {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(exp.date)) {
+          purchaseDate = new Date(exp.date + "T00:00:00Z");
+        } else {
+          purchaseDate = new Date(exp.date);
+        }
+      } else {
+        purchaseDate = new Date();
+      }
+      if (isNaN(purchaseDate.getTime())) purchaseDate = new Date();
+
+      const dueDay = exp.dueDay ?? purchaseDate.getUTCDate();
+      const installmentTotal = Number(exp.installmentTotal) || 1;
+      const parentId = randomUUID();
+
+      const firstDueDate = new Date(
+        Date.UTC(
+          purchaseDate.getUTCFullYear(),
+          purchaseDate.getUTCMonth(),
+          dueDay
+        )
       );
+
+      if (purchaseDate.getUTCDate() > dueDay) {
+        firstDueDate.setUTCMonth(firstDueDate.getUTCMonth() + 1);
+      }
+
+      const parcelsData = Array.from({ length: installmentTotal }, (_, i) => {
+        const dueDate = new Date(
+          Date.UTC(
+            firstDueDate.getUTCFullYear(),
+            firstDueDate.getUTCMonth() + i,
+            dueDay
+          )
+        );
+
+        return {
+          id: i === 0 ? parentId : randomUUID(),
+          description: exp.description ?? null,
+          business: exp.business ?? null,
+          amount: Number(exp.amount),
+          date: purchaseDate,
+          dueDay: dueDay,
+          monthReference: dueDate.getUTCMonth() + 1,
+          yearReference: dueDate.getUTCFullYear(),
+          installmentNumber: i + 1,
+          installmentTotal,
+          parentId: i === 0 ? null : parentId,
+          categoryId,
+          profileId,
+          userId: user.id,
+        };
+      });
+
+      const created = await db.$transaction(
+        parcelsData.map((p) =>
+          db.generalExpense.create({
+            data: p,
+            include: {
+              category: { select: { id: true, name: true } },
+              profile: { select: { id: true, name: true } },
+            },
+          })
+        )
+      );
+
+      createdAll.push(...created);
     }
 
-    const parsedDate = new Date(dueDate);
-    const monthReference = parsedDate.getMonth() + 1;
-    const yearReference = parsedDate.getFullYear();
-
-    const expense = await db.generalExpense.create({
-      data: {
-        description: description || null,
-        amount: Number(amount),
-        dueDate: new Date(dueDate),
-        categoryId: categoryId || null,
-        profileId: profileId || null,
-        userId: user.id,
-        monthReference: monthReference,
-        yearReference: yearReference,
-      },
-      include: {
-        category: { select: { id: true, name: true } },
-        profile: { select: { id: true, name: true } },
-      },
-    });
-
-    const result = {
-      id: expense.id,
-      description: expense.description,
-      amount: Number(expense.amount),
-      dueDate: expense.dueDate.toISOString(),
-      categoryId: expense.categoryId,
-      profileId: expense.profileId,
-      categoryName: expense.category?.name ?? null,
-      profileName: expense.profile?.name ?? null,
-      userId: expense.userId,
-      monthReference: expense.monthReference,
-      yearReference: expense.yearReference,
-    };
+    const result = createdAll.map((c) => ({
+      id: c.id,
+      description: c.description,
+      business: c.business ?? null,
+      amount: Number(c.amount),
+      date: c.date.toISOString(),
+      dueDay: c.dueDay,
+      installmentNumber: c.installmentNumber ?? null,
+      installmentTotal: c.installmentTotal ?? null,
+      parentId: c.parentId ?? null,
+      categoryId: c.categoryId ?? null,
+      profileId: c.profileId ?? null,
+      categoryName: c.category?.name ?? null,
+      profileName: c.profile?.name ?? null,
+      userId: c.userId,
+      monthReference: c.monthReference,
+      yearReference: c.yearReference,
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString(),
+    }));
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error("❌ Erro ao criar despesa geral:", error);
+    console.error("❌ Erro ao criar despesa(s) geral(is):", error);
     return NextResponse.json(
       { error: "Erro ao criar despesa geral" },
       { status: 500 }

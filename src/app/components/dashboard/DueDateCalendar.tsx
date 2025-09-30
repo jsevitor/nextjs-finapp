@@ -1,13 +1,15 @@
+"use client";
+
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ptBR } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-type DueDateCalendar = {
+type DueDateCalendarItem = {
   id: string;
   description: string;
-  dueDate: string;
+  date: string; // vem do backend em ISO
   amount: number;
   categoryName?: string | null;
 };
@@ -19,7 +21,7 @@ export default function DueDateCalendar({
   month: number;
   year: number;
 }) {
-  const [dueDate, setDueDate] = useState<DueDateCalendar[]>([]);
+  const [expenses, setExpenses] = useState<DueDateCalendarItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,9 +32,15 @@ export default function DueDateCalendar({
           `/api/analytics/payment-due-date?month=${month}&year=${year}`
         );
         const data = await res.json();
-        setDueDate(data);
+
+        if (Array.isArray(data)) {
+          setExpenses(data);
+        } else {
+          setExpenses([]);
+        }
       } catch (err) {
         console.error("❌ Erro ao carregar vencimentos:", err);
+        setExpenses([]);
       } finally {
         setLoading(false);
       }
@@ -40,9 +48,13 @@ export default function DueDateCalendar({
     fetchData();
   }, [month, year]);
 
-  const dueDates = dueDate.map(
-    (v) => new Date(v.dueDate.split("T")[0] + "T00:00:00")
-  );
+  // ✅ Corrigido: usa UTC para evitar "um dia a menos"
+  const dates = expenses
+    .filter((expense) => expense.date)
+    .map((expense) => {
+      const d = new Date(expense.date);
+      return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    });
 
   return (
     <Card className="w-full">
@@ -53,14 +65,19 @@ export default function DueDateCalendar({
           </div>
         ) : (
           <Calendar
-            mode="single"
+            mode="multiple"
+            selected={dates}
             locale={ptBR}
             defaultMonth={new Date(year, month - 1)}
             modifiers={{
-              vencimento: dueDates,
+              vencimento: dates,
             }}
             modifiersClassNames={{
-              vencimento: "bg-red-500 text-white rounded-full",
+              vencimento: "bg-red-500 text-white rounded-full", // cor para vencimento
+              selected: "bg-blue-500 text-white rounded-full", // cor para selecionado manual
+            }}
+            classNames={{
+              day_selected: "bg-blue-500 text-white rounded-full", // sobrescreve padrão
             }}
             className="rounded-md border"
           />

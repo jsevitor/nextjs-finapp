@@ -20,8 +20,12 @@ import { useCategoryStore } from "@/stores/categoryStore";
 export default function HousingBillsPage() {
   const { filters, housingBills, isLoading, setFilter } =
     useHousingBillsFilters();
-  const { addHousingBill, updateHousingBill, removeHousingBill } =
-    useHousingBillsStore();
+  const {
+    isLoading: isLoadingHousingBills,
+    addHousingBill,
+    updateHousingBill,
+    removeHousingBill,
+  } = useHousingBillsStore();
   const { categories, fetchCategories } = useCategoryStore();
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -125,6 +129,7 @@ export default function HousingBillsPage() {
         <ButtonVariant typeAction="add" action={handleOpenAddModal} />
 
         <HousingBillsModal
+          isLoading={isLoadingHousingBills}
           isOpen={modalIsOpen}
           bill={isBeingEdited}
           categories={categories}

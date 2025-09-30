@@ -18,51 +18,52 @@ import {
 import GeneralExpensesModal from "../components/ui/general-expenses/GeneralExpensesModal";
 import { formatCurrencyBRL, formatDateBR } from "@/utils/format";
 import { useGeneralExpensesFilters } from "@/hooks/useGeneralExpensesFilters";
+import { toast } from "react-toastify";
 
 export default function GeneralExpensesPage() {
-  // Hook novo com filtros + dados filtrados
   const { filters, generalExpenses, isLoading, setFilter } =
     useGeneralExpensesFilters();
 
-  // Store só para ações de CRUD
-  const { addGeneralExpense, updateGeneralExpense, removeGeneralExpense } =
-    useGeneralExpensesStore();
+  const {
+    isLoading: isLoadingGeneralExpenses,
+    addGeneralExpense,
+    updateGeneralExpense,
+    removeGeneralExpense,
+  } = useGeneralExpensesStore();
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isBeingEdited, setIsBeingEdited] = useState<GeneralExpense | null>(
     null
   );
 
-  const columns: Column<GeneralExpense>[] = [
-    {
-      key: "dueDate",
-      label: "Vencimento",
-      render: (row) => formatDateBR(row.dueDate),
-    },
-    { key: "description", label: "Descrição" },
-    {
-      key: "categoryId",
-      label: "Categoria",
-      render: (row) => row.categoryName ?? "—",
-    },
-    {
-      key: "amount",
-      label: "Valor",
-      align: "right",
-      render: (row) => formatCurrencyBRL(row.amount),
-    },
-  ];
+  const createEmptyExpense = (): GeneralExpense => {
+    const today = new Date();
+    const isoToday = `${today.getUTCFullYear()}-${String(
+      today.getUTCMonth() + 1
+    ).padStart(2, "0")}-${String(today.getUTCDate()).padStart(
+      2,
+      "0"
+    )}T00:00:00Z`;
 
-  const handleOpenAddModal = () => {
-    setIsBeingEdited({
+    return {
       id: "",
       description: "",
       amount: 0,
-      dueDate: new Date().toISOString().split("T")[0],
+      date: isoToday,
+      dueDay: today.getUTCDate(),
       categoryId: "",
-      profileId: "",
-      userId: "",
-    });
+      profileId: "", // ⚠️ Preencher com base no auth, se necessário
+      userId: "", // ⚠️ Preencher com base no auth, se necessário
+      monthReference: today.getUTCMonth() + 1,
+      yearReference: today.getUTCFullYear(),
+      installmentNumber: null,
+      installmentTotal: 1,
+      parentId: null,
+    };
+  };
+
+  const handleOpenAddModal = () => {
+    setIsBeingEdited(createEmptyExpense());
     setModalIsOpen(true);
   };
 
@@ -75,18 +76,60 @@ export default function GeneralExpensesPage() {
       }
       setModalIsOpen(false);
       setIsBeingEdited(null);
+      toast.success("Despesa geral salva com sucesso!");
     } catch (err) {
       console.error("Erro ao salvar despesa geral:", err);
+      toast.error("Erro ao salvar despesa geral!");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await removeGeneralExpense(id);
+      toast.success("Despesa geral removida com sucesso!");
     } catch (err) {
       console.error("Erro ao deletar despesa geral:", err);
+      toast.error("Erro ao deletar despesa geral!");
     }
   };
+
+  const columns: Column<GeneralExpense>[] = [
+    {
+      key: "date",
+      label: "Data",
+      render: (row) => formatDateBR(row.date),
+    },
+    { key: "description", label: "Descrição" },
+    {
+      key: "categoryId",
+      label: "Categoria",
+      render: (row) => row.categoryName ?? "—",
+    },
+    {
+      key: "business",
+      label: "Estabelecimento",
+      render: (row) => row.business ?? "—",
+    },
+    {
+      key: "amount",
+      label: "Valor",
+      align: "right",
+      render: (row) => formatCurrencyBRL(row.amount),
+    },
+    {
+      key: "installmentNumber",
+      label: "Parcela",
+      render: (row) =>
+        row.installmentTotal && row.installmentNumber
+          ? `${row.installmentNumber}/${row.installmentTotal}`
+          : "—",
+    },
+    {
+      key: "dueDay",
+      label: "Vencimento",
+      render: (row) => row.dueDay ?? "—",
+    },
+  ];
 
   return (
     <PageContainer>
@@ -98,16 +141,19 @@ export default function GeneralExpensesPage() {
         <ButtonVariant typeAction="add" action={handleOpenAddModal} />
 
         <GeneralExpensesModal
+          isLoading={isLoadingGeneralExpenses}
           isOpen={modalIsOpen}
           expense={isBeingEdited}
           onChange={setIsBeingEdited}
-          onClose={() => setModalIsOpen(false)}
+          onClose={() => {
+            setModalIsOpen(false);
+            setIsBeingEdited(null);
+          }}
           onSubmit={handleSubmit}
         />
       </Header>
 
       <FiltersContainer>
-        {/* Período */}
         <FilterPeriod
           value={{
             monthReference: Number(filters.monthReference),
@@ -119,7 +165,6 @@ export default function GeneralExpensesPage() {
           }}
         />
 
-        {/* Categoria */}
         <FilterCategory
           value={filters.category}
           onChange={(categoryId) => setFilter("category", categoryId)}

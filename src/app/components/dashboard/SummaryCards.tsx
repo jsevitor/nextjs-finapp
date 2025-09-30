@@ -52,9 +52,9 @@ export default function SummaryCards({
           </p>
           <p className="text-sm flex items-center">
             {data.transactionsVariation >= 0 ? (
-              <ArrowUp className="w-4 h-4 text-red-700 bg-red-500 rounded-full lg:mr-1" />
+              <ArrowUp className="w-4 h-4 text-red-700 bg-red-500 rounded-full mr-1" />
             ) : (
-              <ArrowDown className="w-4 h-4 text-green-700 bg-green-500 rounded-full lg:mr-1" />
+              <ArrowDown className="w-4 h-4 text-green-700 bg-green-500 rounded-full mr-1" />
             )}
             {Math.abs(data.transactionsVariation).toFixed(1)}% mês passado
           </p>

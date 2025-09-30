@@ -6,29 +6,42 @@ import { RouteContext } from "@/types/route-context";
 
 export async function PUT(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
-  if (!user?.id)
+  if (!user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const params = await conext.params;
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  if (!id) return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+  if (!id || typeof id !== "string") {
+    return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+  }
 
   try {
     type ExpenseUpdateBody = {
       description?: string;
       amount: number;
-      dueDate: string;
+      date: string; // Data da compra
+      dueDay?: number; // Dia do vencimento
       categoryId?: string;
       profileId?: string;
+      business?: string;
     };
 
     const body: ExpenseUpdateBody = await req.json();
-    const { description, amount, dueDate, categoryId, profileId } = body;
+    const {
+      description,
+      amount,
+      date,
+      dueDay,
+      categoryId,
+      profileId,
+      business,
+    } = body;
 
-    if (!amount || !dueDate) {
+    if (amount === undefined || !date) {
       return NextResponse.json(
-        { error: "Valor e data de vencimento são obrigatórios." },
+        { error: "Valor e data da compra são obrigatórios." },
         { status: 400 }
       );
     }
@@ -44,16 +57,25 @@ export async function PUT(req: NextRequest, conext: RouteContext) {
       );
     }
 
-    const parsedDate = new Date(dueDate);
-    const monthReference = parsedDate.getMonth() + 1;
-    const yearReference = parsedDate.getFullYear();
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json({ error: "Data inválida." }, { status: 400 });
+    }
+
+    // Usa o dueDay passado ou o existente, ou o dia da data da compra
+    const parsedDueDay =
+      dueDay ?? existingExpense.dueDay ?? parsedDate.getUTCDate();
+    const monthReference = parsedDate.getUTCMonth() + 1;
+    const yearReference = parsedDate.getUTCFullYear();
 
     const updatedExpense = await db.generalExpense.update({
       where: { id },
       data: {
         description: description ?? existingExpense.description,
         amount: Number(amount),
-        dueDate: parsedDate,
+        date: parsedDate,
+        dueDay: parsedDueDay,
+        business: business ?? existingExpense.business,
         categoryId: categoryId ?? existingExpense.categoryId,
         profileId: profileId ?? existingExpense.profileId,
         monthReference,
@@ -68,7 +90,7 @@ export async function PUT(req: NextRequest, conext: RouteContext) {
     return NextResponse.json(
       {
         ...updatedExpense,
-        dueDate: updatedExpense.dueDate.toISOString(),
+        date: updatedExpense.date.toISOString(),
         categoryName: updatedExpense.category?.name ?? null,
         profileName: updatedExpense.profile?.name ?? null,
       },
@@ -85,21 +107,28 @@ export async function PUT(req: NextRequest, conext: RouteContext) {
 
 export async function DELETE(req: NextRequest, conext: RouteContext) {
   const user = await getCurrentUser();
-  if (!user?.id)
+  if (!user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const params = await conext.params;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  if (!id || typeof id !== "string") {
+    return NextResponse.json({ error: "ID inválido." }, { status: 400 });
+  }
 
   try {
-    const params = await conext.params;
-    const id = Array.isArray(params.id) ? params.id[0] : params.id;
-
     const existingExpense = await db.generalExpense.findFirst({
       where: { id, userId: user.id },
     });
-    if (!existingExpense)
+
+    if (!existingExpense) {
       return NextResponse.json(
         { error: "Despesa não encontrada ou não autorizada." },
         { status: 403 }
       );
+    }
 
     await db.generalExpense.delete({ where: { id } });
 

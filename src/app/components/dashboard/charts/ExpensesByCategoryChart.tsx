@@ -16,6 +16,12 @@ interface ExpenseCategoryData {
   total: number;
 }
 
+interface ChartDataInput {
+  [key: string]: string | number;
+  categoryName: string;
+  total: number;
+}
+
 const COLORS = [
   "#10b981",
   "#3b82f6",
@@ -27,21 +33,6 @@ const COLORS = [
   "#6b7280",
 ];
 
-// const monthLabels = [
-//   "Janeiro",
-//   "Fevereiro",
-//   "Março",
-//   "Abril",
-//   "Maio",
-//   "Junho",
-//   "Julho",
-//   "Agosto",
-//   "Setembro",
-//   "Outubro",
-//   "Novembro",
-//   "Dezembro",
-// ];
-
 export default function ExpenseByCategoryChart({
   month,
   year,
@@ -49,7 +40,7 @@ export default function ExpenseByCategoryChart({
   month: number;
   year: number;
 }) {
-  const [data, setData] = useState<ExpenseCategoryData[]>([]);
+  const [data, setData] = useState<ChartDataInput[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,7 +52,12 @@ export default function ExpenseByCategoryChart({
         );
         const json = await res.json();
         setData(
-          (json ?? []).filter((item: { total: number }) => item.total > 0)
+          (json ?? [])
+            .filter((item: { total: number }) => item.total > 0)
+            .map((item: ExpenseCategoryData) => ({
+              categoryName: item.categoryName,
+              total: item.total,
+            }))
         );
       } catch (err) {
         console.error("Erro ao buscar dados:", err);

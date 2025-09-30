@@ -5,8 +5,10 @@ import { Filters } from "../app/types/filters";
 export type GeneralExpense = {
   id: string;
   description?: string | null;
+  business?: string | null;
   amount: number;
-  dueDate: string;
+  date: string; // ISO string
+  dueDay: number;
   categoryId?: string | null;
   profileId?: string | null;
   userId: string;
@@ -16,6 +18,9 @@ export type GeneralExpense = {
   profileName?: string | null;
   monthReference?: number;
   yearReference?: number;
+  installmentNumber?: number | null;
+  installmentTotal?: number | null;
+  parentId?: string | null;
 };
 
 type GeneralExpensesStore = {
@@ -25,7 +30,9 @@ type GeneralExpensesStore = {
   lastFetchFilters: Partial<Filters> | null;
 
   fetchGeneralExpenses: (filters: Filters) => Promise<void>;
-  addGeneralExpense: (expense: Omit<GeneralExpense, "id">) => Promise<void>;
+  addGeneralExpense: (
+    expense: Omit<GeneralExpense, "id" | "createdAt" | "updatedAt">
+  ) => Promise<void>;
   updateGeneralExpense: (expense: GeneralExpense) => Promise<void>;
   removeGeneralExpense: (id: string) => Promise<void>;
   clearGeneralExpenses: () => void;
@@ -62,10 +69,15 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
         });
 
         if (filters.category) params.append("category", filters.category);
-        if (filters.minValue !== undefined)
+
+        // CORREÇÃO AQUI - verificar se minValue e maxValue são números válidos
+        if (typeof filters.minValue === "number" && !isNaN(filters.minValue)) {
           params.append("minValue", String(filters.minValue));
-        if (filters.maxValue !== undefined)
+        }
+
+        if (typeof filters.maxValue === "number" && !isNaN(filters.maxValue)) {
           params.append("maxValue", String(filters.maxValue));
+        }
 
         const url = `/api/despesas-gerais?${params.toString()}`;
         console.log("🔍 Buscando despesas gerais:", url);
@@ -86,13 +98,13 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
           throw new Error("Formato de resposta inválido");
         }
 
-        // Normaliza os dados com o tipo GeneralExpense
         const normalizedExpenses = data.map((ge) => ({
           ...ge,
           amount: Number(ge.amount) || 0,
-          description: ge.description || null,
-          categoryId: ge.categoryId || null,
-          profileId: ge.profileId || null,
+          description: ge.description ?? null,
+          business: ge.business ?? null,
+          categoryId: ge.categoryId ?? null,
+          profileId: ge.profileId ?? null,
         }));
 
         set({
@@ -118,10 +130,22 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
     addGeneralExpense: async (expense) => {
       set({ isLoading: true, error: null });
       try {
+        const normalizedExpense = {
+          ...expense,
+          categoryId:
+            expense.categoryId && expense.categoryId !== ""
+              ? expense.categoryId
+              : null,
+          profileId:
+            expense.profileId && expense.profileId !== ""
+              ? expense.profileId
+              : null,
+        };
+
         const response = await fetch("/api/despesas-gerais", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(expense),
+          body: JSON.stringify(normalizedExpense),
         });
 
         if (!response.ok) {
@@ -129,13 +153,30 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
           throw new Error(errorData.error || "Erro ao adicionar despesa");
         }
 
-        const newExpense = await response.json();
+        const payload = await response.json();
+
+        const createdArray: GeneralExpense[] = Array.isArray(payload)
+          ? payload
+          : [payload];
+
+        const normalized = createdArray.map((ge) => ({
+          ...ge,
+          amount: Number(ge.amount) || 0,
+          description: ge.description ?? null,
+          business: ge.business ?? null,
+          categoryId: ge.categoryId ?? null,
+          profileId: ge.profileId ?? null,
+        }));
+
         set((state) => ({
-          generalExpenses: [...state.generalExpenses, newExpense],
+          generalExpenses: [...state.generalExpenses, ...normalized],
           isLoading: false,
         }));
 
-        console.log("✅ Despesa geral adicionada:", newExpense);
+        console.log(
+          "✅ Despesa(s) geral(is) adicionada(s):",
+          normalized.length
+        );
       } catch (error) {
         console.error("❌ Erro ao adicionar despesa:", error);
         set({
@@ -149,10 +190,22 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
     updateGeneralExpense: async (expense) => {
       set({ isLoading: true, error: null });
       try {
+        const normalizedExpense = {
+          ...expense,
+          categoryId:
+            expense.categoryId && expense.categoryId !== ""
+              ? expense.categoryId
+              : null,
+          profileId:
+            expense.profileId && expense.profileId !== ""
+              ? expense.profileId
+              : null,
+        };
+
         const response = await fetch(`/api/despesas-gerais/${expense.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(expense),
+          body: JSON.stringify(normalizedExpense),
         });
 
         if (!response.ok) {
@@ -160,10 +213,10 @@ export const useGeneralExpensesStore = create<GeneralExpensesStore>(
           throw new Error(errorData.error || "Erro ao atualizar despesa");
         }
 
-        const updatedExpense = await response.json();
+        const updatedExpense: GeneralExpense = await response.json();
         set((state) => ({
           generalExpenses: state.generalExpenses.map((ge) =>
-            ge.id === expense.id ? updatedExpense : ge
+            ge.id === expense.id ? { ...ge, ...updatedExpense } : ge
           ),
           isLoading: false,
         }));

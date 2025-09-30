@@ -11,10 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "react-toastify";
 
 type HousingBillsModalProps = {
   isOpen: boolean;
   bill: HousingBill | null;
+  isLoading: boolean;
   onChange: (bill: HousingBill | null) => void;
   onClose: () => void;
   onSubmit: (bill: HousingBill) => void;
@@ -26,6 +28,7 @@ type HousingBillsModalProps = {
 export default function HousingBillsModal({
   isOpen,
   bill,
+  isLoading,
   onChange,
   onClose,
   onSubmit,
@@ -43,7 +46,10 @@ export default function HousingBillsModal({
     onChange({ ...bill, [field]: value });
   };
 
-  const handleSubmit = () => onSubmit(bill);
+  const handleSubmit = () => {
+    onSubmit(bill);
+    toast.success("Conta de Moradia salva com sucesso!");
+  };
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 8 }, (_, i) => currentYear - 5 + i);
@@ -168,7 +174,13 @@ export default function HousingBillsModal({
           Cancelar
         </Button>
         <Button onClick={handleSubmit} className="w-1/2 lg:w-1/3">
-          Salvar
+          {bill.id
+            ? isLoading
+              ? "Carregando..."
+              : "Salvar"
+            : isLoading
+            ? "Carregando..."
+            : "Adicionar"}
         </Button>
       </div>
     </Modal>

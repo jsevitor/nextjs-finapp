@@ -1,21 +1,25 @@
+// src/app/api/analytics/payment-due-date/route.ts
 import { db } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+
     const month = Number(searchParams.get("month"));
     const year = Number(searchParams.get("year"));
 
-    if (!month || !year) {
+    if (!month || !year || isNaN(month) || isNaN(year)) {
       return NextResponse.json(
-        { error: "month e year são obrigatórios" },
+        { error: "`month` e `year` são obrigatórios e devem ser números" },
         { status: 400 }
       );
     }
 
-    // General Expenses
-    const general = await db.generalExpense.findMany({
+    /** =============================
+     *  1. Despesas Gerais (com dueDay)
+     * ============================= */
+    const generalExpenses = await db.generalExpense.findMany({
       where: {
         monthReference: month,
         yearReference: year,
@@ -24,13 +28,21 @@ export async function GET(req: NextRequest) {
         id: true,
         description: true,
         amount: true,
-        dueDate: true,
-        category: { select: { name: true } },
+        dueDay: true,
+        monthReference: true,
+        yearReference: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    // Housing Bills
-    const housing = await db.housingBill.findMany({
+    /** =============================
+     *  2. Contas de Moradia
+     * ============================= */
+    const housingBills = await db.housingBill.findMany({
       where: {
         monthReference: month,
         yearReference: year,
@@ -40,11 +52,17 @@ export async function GET(req: NextRequest) {
         name: true,
         amount: true,
         dueDate: true,
-        category: { select: { name: true } },
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    // Cards
+    /** =============================
+     *  3. Cartões + Transações
+     * ============================= */
     const cards = await db.card.findMany({
       select: {
         id: true,
@@ -53,7 +71,6 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Transactions
     const transactions = await db.transaction.findMany({
       where: {
         monthReference: month,
@@ -66,38 +83,57 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Normaliza
-    const result = [
-      ...general.map((g) => ({
+    /** =============================
+     *  4. Normalização
+     * ============================= */
+
+    // Para despesas gerais: usa dueDay + monthReference/ yearReference para vencimento
+    const normalizedGeneral = generalExpenses.map((g) => {
+      // Calcula data de vencimento em UTC para evitar deslocamento de mês
+      const dueDate = new Date(
+        Date.UTC(g.yearReference, g.monthReference - 1, g.dueDay)
+      );
+
+      return {
         id: g.id,
         description: g.description ?? "Despesa Geral",
-        dueDate: g.dueDate,
+        date: dueDate.toISOString(), // agora “date” = vencimento calculado
         amount: g.amount,
         categoryName: g.category?.name ?? null,
-      })),
-      ...housing.map((h) => ({
-        id: h.id,
-        description: h.name,
-        dueDate: h.dueDate,
-        amount: h.amount,
-        categoryName: h.category?.name ?? null,
-      })),
-      ...cards.map((c) => {
-        // soma das transactions do cartão
-        const cardTransactions = transactions.filter((t) => t.cardId === c.id);
-        const totalAmount = cardTransactions.reduce(
-          (sum, t) => sum + t.amount,
-          0
-        );
+      };
+    });
 
-        return {
-          id: c.id,
-          description: c.name,
-          dueDate: new Date(year, month - 1, c.dueDay),
-          amount: totalAmount,
-          categoryName: null,
-        };
-      }),
+    const normalizedHousing = housingBills.map((h) => ({
+      id: h.id,
+      description: h.name,
+      date: h.dueDate.toISOString(),
+      amount: h.amount,
+      categoryName: h.category?.name ?? null,
+    }));
+
+    const normalizedCards = cards.map((c) => {
+      const cardTransactions = transactions.filter((t) => t.cardId === c.id);
+      const totalAmount = cardTransactions.reduce(
+        (sum, t) => sum + t.amount,
+        0
+      );
+
+      // Vencimento do cartão no mês de referência, no dia do dueDay
+      const dueDate = new Date(Date.UTC(year, month - 1, c.dueDay));
+
+      return {
+        id: c.id,
+        description: c.name,
+        date: dueDate.toISOString(),
+        amount: totalAmount,
+        categoryName: null,
+      };
+    });
+
+    const result = [
+      ...normalizedGeneral,
+      ...normalizedHousing,
+      ...normalizedCards,
     ];
 
     return NextResponse.json(result, { status: 200 });
