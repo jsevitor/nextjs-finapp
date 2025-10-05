@@ -1,9 +1,23 @@
 // src/app/api/analytics/payment-due-date/route.ts
 import { db } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth"; // ajuste o caminho conforme sua estrutura
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Usuário não autenticado" },
+        { status: 401 }
+      );
+    }
+
+    const userEmail = session.user.email;
+    const isVitor = userEmail === "jvoliveer@gmail.com"; // troque pelo seu e-mail
+
     const { searchParams } = new URL(req.url);
 
     const month = Number(searchParams.get("month"));
@@ -17,48 +31,46 @@ export async function GET(req: NextRequest) {
     }
 
     /** =============================
-     *  1. Despesas Gerais (com dueDay)
+     *  1. Despesas Gerais
      * ============================= */
-    const generalExpenses = await db.generalExpense.findMany({
-      where: {
-        monthReference: month,
-        yearReference: year,
-      },
-      select: {
-        id: true,
-        description: true,
-        amount: true,
-        dueDay: true,
-        monthReference: true,
-        yearReference: true,
-        category: {
-          select: {
-            name: true,
-          },
+    let generalExpenses: any[] = [];
+    if (isVitor) {
+      generalExpenses = await db.generalExpense.findMany({
+        where: {
+          monthReference: month,
+          yearReference: year,
         },
-      },
-    });
+        select: {
+          id: true,
+          description: true,
+          amount: true,
+          dueDay: true,
+          monthReference: true,
+          yearReference: true,
+          category: { select: { name: true } },
+        },
+      });
+    }
 
     /** =============================
      *  2. Contas de Moradia
      * ============================= */
-    const housingBills = await db.housingBill.findMany({
-      where: {
-        monthReference: month,
-        yearReference: year,
-      },
-      select: {
-        id: true,
-        name: true,
-        amount: true,
-        dueDate: true,
-        category: {
-          select: {
-            name: true,
-          },
+    let housingBills: any[] = [];
+    if (isVitor) {
+      housingBills = await db.housingBill.findMany({
+        where: {
+          monthReference: month,
+          yearReference: year,
         },
-      },
-    });
+        select: {
+          id: true,
+          name: true,
+          amount: true,
+          dueDate: true,
+          category: { select: { name: true } },
+        },
+      });
+    }
 
     /** =============================
      *  3. Cartões + Transações
@@ -86,18 +98,14 @@ export async function GET(req: NextRequest) {
     /** =============================
      *  4. Normalização
      * ============================= */
-
-    // Para despesas gerais: usa dueDay + monthReference/ yearReference para vencimento
     const normalizedGeneral = generalExpenses.map((g) => {
-      // Calcula data de vencimento em UTC para evitar deslocamento de mês
       const dueDate = new Date(
         Date.UTC(g.yearReference, g.monthReference - 1, g.dueDay)
       );
-
       return {
         id: g.id,
         description: g.description ?? "Despesa Geral",
-        date: dueDate.toISOString(), // agora “date” = vencimento calculado
+        date: dueDate.toISOString(),
         amount: g.amount,
         categoryName: g.category?.name ?? null,
       };
@@ -117,10 +125,7 @@ export async function GET(req: NextRequest) {
         (sum, t) => sum + t.amount,
         0
       );
-
-      // Vencimento do cartão no mês de referência, no dia do dueDay
       const dueDate = new Date(Date.UTC(year, month - 1, c.dueDay));
-
       return {
         id: c.id,
         description: c.name,
@@ -130,10 +135,13 @@ export async function GET(req: NextRequest) {
       };
     });
 
+    /** =============================
+     *  5. Monta resultado final
+     * ============================= */
     const result = [
-      ...normalizedGeneral,
-      ...normalizedHousing,
       ...normalizedCards,
+      ...(isVitor ? normalizedGeneral : []),
+      ...(isVitor ? normalizedHousing : []),
     ];
 
     return NextResponse.json(result, { status: 200 });

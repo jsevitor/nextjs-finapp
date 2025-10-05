@@ -23,7 +23,6 @@ export async function GET(req: Request) {
     const transactions = await db.transaction.groupBy({
       by: ["monthReference"],
       where: {
-        profile: { userId: user.id },
         yearReference: year,
       },
       _sum: { amount: true },

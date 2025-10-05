@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     const where: TransactionWhere = {
       monthReference,
       yearReference,
-      card: { userId: user.id },
+      // card: { userId: user.id },
     };
 
     if (cardId) where.cardId = cardId;

@@ -40,10 +40,20 @@ import {
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Receitas", url: "/receitas", icon: TrendingUp },
+  { title: "Receitas", url: "/receitas", icon: TrendingUp, restricted: true },
   { title: "Transações", url: "/transacoes", icon: TrendingDown },
-  { title: "Despesas Moradia", url: "/despesas-moradia", icon: House },
-  { title: "Despesas Gerais", url: "/despesas-gerais", icon: PieChart },
+  {
+    title: "Despesas Moradia",
+    url: "/despesas-moradia",
+    icon: House,
+    restricted: true,
+  },
+  {
+    title: "Despesas Gerais",
+    url: "/despesas-gerais",
+    icon: PieChart,
+    restricted: true,
+  },
   { title: "Cartões", url: "/cartoes", icon: CreditCard },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
@@ -52,9 +62,18 @@ export function AppSidebar() {
   const { user } = useSessionStore((state) => state.session);
   const pathname = usePathname();
 
+  // ⚙️ ID ou e-mail que pode ver tudo
+  const myEmail = "jvoliveer@gmail.com"; // <-- troque pelo seu
+  const isVitor = user?.email === myEmail;
+
+  // 🔒 Filtra menus com base no flag `restricted`
+  const filteredItems = items.filter((item) => {
+    if (item.restricted && !isVitor) return false;
+    return true;
+  });
+
   return (
     <>
-      {/* Trigger fixo só no mobile */}
       <div className="absolute left-2 top-2 lg:hidden z-50">
         <SidebarTrigger />
       </div>
@@ -63,8 +82,8 @@ export function AppSidebar() {
         collapsible="icon"
         className={cn(
           "fixed left-0 top-0 z-40 h-screen border-r bg-sidebar transition-all",
-          "lg:[data-state=collapsed]", // em lg começa fechada
-          "2xl:[data-state=expanded]" // em xl ou maior começa aberta
+          "lg:[data-state=collapsed]",
+          "2xl:[data-state=expanded]"
         )}
       >
         <SidebarContent>
@@ -73,14 +92,14 @@ export function AppSidebar() {
               <span className="group-data-[collapsible=icon]:hidden text-sidebar-accent-foreground">
                 FINAPP
               </span>
-              {/* Trigger só no desktop */}
               <SidebarTrigger className="group-data-[collapsible=icon]:justify-start group-data-[state=expanded]:justify-end hidden lg:flex" />
             </SidebarGroupLabel>
 
             <SidebarSeparator className="my-2 2xl:my-4" />
+
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => {
+                {filteredItems.map((item) => {
                   const isActive = pathname === item.url;
                   return (
                     <SidebarMenuItem key={item.title}>
