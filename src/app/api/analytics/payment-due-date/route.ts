@@ -4,6 +4,37 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth"; // ajuste o caminho conforme sua estrutura
 
+// Tipagens para as entidades retornadas do Prisma
+type GeneralExpenseItem = {
+  id: string;
+  description: string | null;
+  amount: number;
+  dueDay: number;
+  monthReference: number;
+  yearReference: number;
+  category: { name: string | null } | null; // 🔹 aceita null
+};
+
+type HousingBillItem = {
+  id: string;
+  name: string;
+  amount: number;
+  dueDate: Date;
+  category: { name: string | null } | null; // 🔹 aceita null
+};
+
+type CardItem = {
+  id: string;
+  name: string;
+  dueDay: number;
+};
+
+type TransactionItem = {
+  id: string;
+  cardId: string;
+  amount: number;
+};
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,7 +50,6 @@ export async function GET(req: NextRequest) {
     const isVitor = userEmail === "jvoliveer@gmail.com"; // troque pelo seu e-mail
 
     const { searchParams } = new URL(req.url);
-
     const month = Number(searchParams.get("month"));
     const year = Number(searchParams.get("year"));
 
@@ -33,13 +63,10 @@ export async function GET(req: NextRequest) {
     /** =============================
      *  1. Despesas Gerais
      * ============================= */
-    let generalExpenses: any[] = [];
+    let generalExpenses: GeneralExpenseItem[] = [];
     if (isVitor) {
       generalExpenses = await db.generalExpense.findMany({
-        where: {
-          monthReference: month,
-          yearReference: year,
-        },
+        where: { monthReference: month, yearReference: year },
         select: {
           id: true,
           description: true,
@@ -55,13 +82,10 @@ export async function GET(req: NextRequest) {
     /** =============================
      *  2. Contas de Moradia
      * ============================= */
-    let housingBills: any[] = [];
+    let housingBills: HousingBillItem[] = [];
     if (isVitor) {
       housingBills = await db.housingBill.findMany({
-        where: {
-          monthReference: month,
-          yearReference: year,
-        },
+        where: { monthReference: month, yearReference: year },
         select: {
           id: true,
           name: true,
@@ -75,41 +99,27 @@ export async function GET(req: NextRequest) {
     /** =============================
      *  3. Cartões + Transações
      * ============================= */
-    const cards = await db.card.findMany({
-      select: {
-        id: true,
-        name: true,
-        dueDay: true,
-      },
+    const cards: CardItem[] = await db.card.findMany({
+      select: { id: true, name: true, dueDay: true },
     });
 
-    const transactions = await db.transaction.findMany({
-      where: {
-        monthReference: month,
-        yearReference: year,
-      },
-      select: {
-        id: true,
-        cardId: true,
-        amount: true,
-      },
+    const transactions: TransactionItem[] = await db.transaction.findMany({
+      where: { monthReference: month, yearReference: year },
+      select: { id: true, cardId: true, amount: true },
     });
 
     /** =============================
      *  4. Normalização
      * ============================= */
-    const normalizedGeneral = generalExpenses.map((g) => {
-      const dueDate = new Date(
+    const normalizedGeneral = generalExpenses.map((g) => ({
+      id: g.id,
+      description: g.description ?? "Despesa Geral",
+      date: new Date(
         Date.UTC(g.yearReference, g.monthReference - 1, g.dueDay)
-      );
-      return {
-        id: g.id,
-        description: g.description ?? "Despesa Geral",
-        date: dueDate.toISOString(),
-        amount: g.amount,
-        categoryName: g.category?.name ?? null,
-      };
-    });
+      ).toISOString(),
+      amount: g.amount,
+      categoryName: g.category?.name ?? null,
+    }));
 
     const normalizedHousing = housingBills.map((h) => ({
       id: h.id,
