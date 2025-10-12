@@ -1,4 +1,6 @@
 // src/app/components/dashboard/charts/ExpenseByProfileChart.tsx
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   BarChart,
@@ -11,6 +13,7 @@ import {
 } from "recharts";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { useSessionStore } from "@/stores/sessionStore";
 
 interface ExpenseProfileData {
   profileId: string;
@@ -28,6 +31,9 @@ export default function ExpenseByProfileChart({
   const [data, setData] = useState<ExpenseProfileData[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { session } = useSessionStore(); // 👈 pega o usuário da store
+  const userName = session?.user?.name?.toLowerCase() ?? ""; // nome do usuário logado
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -37,9 +43,17 @@ export default function ExpenseByProfileChart({
         );
         const json = await res.json();
 
-        const filtered = (json ?? []).filter(
+        let filtered = (json ?? []).filter(
           (item: { totalAmount: number }) => item.totalAmount > 0
         );
+
+        // 👇 Se o usuário não for "vitor", remove o perfil "vó"
+        if (userName !== "vitor") {
+          filtered = filtered.filter(
+            (item: { profileName: string }) =>
+              item.profileName?.toLowerCase() !== "vó"
+          );
+        }
 
         setData(filtered);
       } catch (error) {
@@ -50,7 +64,7 @@ export default function ExpenseByProfileChart({
     }
 
     fetchData();
-  }, [month, year]);
+  }, [month, year, userName]);
 
   return (
     <Card className="w-full">

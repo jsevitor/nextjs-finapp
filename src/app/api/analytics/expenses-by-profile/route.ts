@@ -30,7 +30,6 @@ export async function GET(req: Request) {
     const transactions = await db.transaction.groupBy({
       by: ["profileId"],
       where: {
-        profile: { userId: user.id },
         monthReference: month,
         yearReference: year,
       },
@@ -39,7 +38,6 @@ export async function GET(req: Request) {
 
     // Busca perfis do usuário
     const profiles = await db.profile.findMany({
-      where: { userId: user.id },
       select: { id: true, name: true },
     });
 
